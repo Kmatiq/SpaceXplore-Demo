@@ -1,0 +1,6 @@
+{
+  "name": "Matiqsson SpaceXplorer AB",
+  "description": "Real-time 6DoF WebGL 2 procedural Solar System simulation with floating-origin precision, logarithmic depth buffer, uber-shader planetary rendering, and dual desktop/mobile controls.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

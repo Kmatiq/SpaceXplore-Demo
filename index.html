@@ -1,0 +1,3430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Matiqsson SpaceXplorer AB</title>
+<meta name="description" content="Real-time 6DoF WebGL 2 procedural Solar System flight inspection with deep starfield, asteroid belt, moons, discovery scanner, orbital autopilot, and dual desktop/mobile controls." />
+<meta property="og:title" content="Matiqsson SpaceXplorer AB" />
+<meta property="og:description" content="Real-time 6DoF WebGL 2 procedural Solar System flight inspection with deep starfield, asteroid belt, moons, discovery scanner, orbital autopilot, and dual desktop/mobile controls." />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<style>
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #04070e;
+    font-family: 'Oxanium', 'Chakra Petch', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: #f0f9ff;
+    touch-action: none;
+  }
+  #glCanvas, #hudCanvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  #glCanvas { z-index: 1; cursor: crosshair; }
+  #hudCanvas { z-index: 2; pointer-events: none; }
+
+  #uiOverlay {
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: max(10px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  }
+
+  .top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    pointer-events: none;
+    flex-wrap: wrap;
+  }
+  .brand-block {
+    pointer-events: auto;
+    background: rgba(7, 11, 20, 0.78);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    backdrop-filter: blur(8px);
+    padding: 8px 14px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-title {
+    font-size: clamp(13px, 1.4vw, 15px);
+    font-weight: 700;
+    letter-spacing: 0.11em;
+    color: #f8fafc;
+    white-space: nowrap;
+  }
+  .brand-sub {
+    font-size: clamp(11px, 1.1vw, 12px);
+    color: #38bdf8;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    pointer-events: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .target-group {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(7, 11, 20, 0.84);
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .target-group .hud-btn {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    min-height: 38px;
+    padding: 6px 10px;
+  }
+  .target-chip {
+    appearance: none;
+    background: rgba(14, 116, 144, 0.22);
+    border: none;
+    border-left: 1px solid rgba(148, 163, 184, 0.20);
+    border-right: 1px solid rgba(148, 163, 184, 0.20);
+    color: #e0f2fe;
+    padding: 6px 11px;
+    min-height: 38px;
+    font-size: clamp(11px, 1.1vw, 12px);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .target-chip:hover {
+    background: rgba(14, 116, 144, 0.38);
+    color: #ffffff;
+  }
+
+  .hud-btn {
+    appearance: none;
+    background: rgba(7, 11, 20, 0.82);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 6px;
+    padding: 7px 11px;
+    min-height: 38px;
+    font-size: clamp(11px, 1.1vw, 12px);
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: transform 120ms ease, background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+    white-space: nowrap;
+    touch-action: manipulation;
+  }
+  .hud-btn:hover {
+    background: rgba(15, 23, 42, 0.94);
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+  .hud-btn:active, .hud-btn.active {
+    transform: scale(0.96);
+    background: rgba(14, 116, 144, 0.45);
+    border-color: #38bdf8;
+    color: #f0f9ff;
+  }
+  .hud-btn.warp-btn {
+    border-color: rgba(245, 158, 11, 0.45);
+    color: #fde68a;
+  }
+  .hud-btn.warp-btn.active {
+    background: rgba(217, 119, 6, 0.48);
+    border-color: #fbbf24;
+    color: #fffbeb;
+  }
+  .hud-btn.orbit-btn.active {
+    background: rgba(6, 182, 212, 0.38);
+    border-color: #22d3ee;
+    color: #ecfeff;
+  }
+  .hud-btn.scan-btn.active {
+    background: rgba(16, 185, 129, 0.35);
+    border-color: #34d399;
+    color: #ecfdf5;
+  }
+  .hud-btn.rings-btn.active {
+    background: rgba(14, 116, 144, 0.35);
+    border-color: #38bdf8;
+    color: #e0f2fe;
+  }
+
+  /* Complete HUD Hide Mode */
+  #btnShowHud {
+    position: fixed;
+    top: max(10px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    z-index: 10;
+    display: none;
+    appearance: none;
+    background: rgba(7, 11, 20, 0.50);
+    color: rgba(226, 232, 240, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    opacity: 0.32;
+    transition: opacity 160ms ease, background-color 160ms ease;
+  }
+  #btnShowHud:hover, #btnShowHud:active {
+    opacity: 0.95;
+    background: rgba(15, 23, 42, 0.90);
+    color: #ffffff;
+  }
+  body.hud-hidden #uiOverlay,
+  body.hud-hidden #hudCanvas,
+  body.hud-hidden #logDrawer,
+  body.hud-hidden #victoryModal {
+    display: none !important;
+  }
+  body.hud-hidden #btnShowHud {
+    display: block;
+  }
+
+  /* Mission Info Box & Victory Card */
+  #missionBox {
+    pointer-events: auto;
+    align-self: flex-end;
+    margin-top: 8px;
+    width: min(295px, calc(100vw - 28px));
+    background: rgba(6, 9, 16, 0.84);
+    border: 1px solid rgba(148, 163, 184, 0.26);
+    border-radius: 6px;
+    backdrop-filter: blur(8px);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  #missionBox.hidden {
+    display: none;
+  }
+  .mission-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .mission-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    color: #f8fafc;
+  }
+  .mission-count {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fbbf24;
+    font-variant-numeric: tabular-nums;
+  }
+  .mission-count.done {
+    color: #34d399;
+  }
+  .mission-desc {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #cbd5e1;
+  }
+  .mission-bar {
+    height: 4px;
+    width: 100%;
+    background: rgba(148, 163, 184, 0.18);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mission-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: #38bdf8;
+    transition: width 220ms ease, background-color 220ms ease;
+  }
+  .mission-bar-fill.done {
+    background: #34d399;
+  }
+  .mission-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 2px;
+  }
+  .mission-mini-btn {
+    appearance: none;
+    flex: 1;
+    background: rgba(15, 23, 42, 0.85);
+    color: #cbd5e1;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+  }
+  .mission-mini-btn:hover {
+    border-color: #38bdf8;
+    color: #ffffff;
+  }
+
+  #victoryModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 8;
+    width: min(360px, calc(100vw - 32px));
+    background: rgba(6, 12, 20, 0.94);
+    border: 1px solid rgba(52, 211, 153, 0.55);
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    padding: 18px 20px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    pointer-events: auto;
+  }
+  #victoryModal.open {
+    display: flex;
+  }
+  .victory-title {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #34d399;
+  }
+  .victory-text {
+    font-size: 13px;
+    line-height: 1.45;
+    color: #e2e8f0;
+  }
+  .victory-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .victory-btns .hud-btn {
+    flex: 1;
+  }
+
+  /* Collapsible NASA Field Log Drawer */
+  #logDrawer {
+    position: fixed;
+    top: 64px;
+    right: max(14px, env(safe-area-inset-right));
+    width: min(360px, calc(100vw - 28px));
+    max-height: calc(100vh - 150px);
+    background: rgba(7, 11, 20, 0.90);
+    border: 1px solid rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+    backdrop-filter: blur(12px);
+    z-index: 6;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    pointer-events: auto;
+  }
+  #logDrawer.open {
+    display: flex;
+  }
+  .log-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  }
+  .log-title {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #f8fafc;
+  }
+  .log-count {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: #34d399;
+    font-variant-numeric: tabular-nums;
+  }
+  .log-list {
+    overflow-y: auto;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .log-item {
+    text-align: left;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+    color: #e2e8f0;
+    transition: border-color 140ms ease, background-color 140ms ease;
+  }
+  .log-item:hover {
+    border-color: rgba(56, 189, 248, 0.55);
+    background: rgba(30, 41, 59, 0.72);
+  }
+  .log-item.selected {
+    border-color: #38bdf8;
+    background: rgba(14, 116, 144, 0.22);
+  }
+  .log-item-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .log-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+  .log-status {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+  .log-status.surveyed {
+    color: #34d399;
+  }
+  .log-meta {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-bottom: 4px;
+  }
+  .log-fact {
+    font-size: 12px;
+    line-height: 1.45;
+    color: #cbd5e1;
+  }
+
+  /* Touch Controls */
+  #touchControls {
+    display: none;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+    padding-bottom: 14px;
+    gap: 10px;
+  }
+  body.touch-enabled #touchControls {
+    display: flex;
+  }
+  .joy-zone {
+    position: relative;
+    width: clamp(118px, 24vmin, 156px);
+    height: clamp(118px, 24vmin, 156px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(15, 23, 42, 0.48) 0%, rgba(7, 11, 20, 0.80) 100%);
+    border: 1.5px solid rgba(56, 189, 248, 0.42);
+    pointer-events: auto;
+    touch-action: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .joy-crosshair {
+    position: absolute;
+    inset: 16%;
+    border-radius: 50%;
+    border: 1px dashed rgba(56, 189, 248, 0.26);
+    pointer-events: none;
+  }
+  .joy-knob {
+    width: clamp(44px, 8.5vmin, 56px);
+    height: clamp(44px, 8.5vmin, 56px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #7dd3fc, #0284c7);
+    border: 1.5px solid #e0f2fe;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.48);
+    pointer-events: none;
+    transform: translate3d(0px, 0px, 0px);
+  }
+  .joy-label {
+    position: absolute;
+    bottom: -18px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    color: rgba(203, 213, 225, 0.90);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  /* Right-Side Trim + Giant Circular BOOST Pad (mirrors left joystick) */
+  .right-touch-deck {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    pointer-events: none;
+  }
+  .trim-cluster {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 6px;
+    pointer-events: auto;
+  }
+  .trim-cluster .hud-btn {
+    min-width: 64px;
+    min-height: 44px;
+    padding: 6px 8px;
+    font-size: 11px;
+    text-align: center;
+  }
+  .boost-zone {
+    position: relative;
+    appearance: none;
+    width: clamp(118px, 24vmin, 156px);
+    height: clamp(118px, 24vmin, 156px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(217, 119, 6, 0.28) 0%, rgba(15, 23, 42, 0.84) 72%, rgba(7, 11, 20, 0.92) 100%);
+    border: 2px solid rgba(251, 191, 36, 0.62);
+    box-shadow: 0 0 18px rgba(245, 158, 11, 0.20);
+    color: #fef3c7;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    flex-shrink: 0;
+    transition: transform 100ms ease, box-shadow 120ms ease, border-color 120ms ease, background 120ms ease;
+  }
+  .boost-zone-ring {
+    position: absolute;
+    inset: 12%;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(251, 191, 36, 0.42);
+    pointer-events: none;
+  }
+  .boost-zone-title {
+    font-size: clamp(15px, 2.8vmin, 20px);
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #fde68a;
+    pointer-events: none;
+  }
+  .boost-zone-sub {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(253, 230, 138, 0.78);
+    pointer-events: none;
+  }
+  .boost-zone:active, .boost-zone.active {
+    transform: scale(0.95);
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.75) 0%, rgba(180, 83, 9, 0.70) 68%, rgba(120, 53, 15, 0.92) 100%);
+    border-color: #fde68a;
+    box-shadow: 0 0 28px rgba(251, 191, 36, 0.62);
+  }
+  .boost-zone.active .boost-zone-title {
+    color: #ffffff;
+  }
+
+  #lookZone {
+    position: fixed;
+    top: 64px;
+    right: 0;
+    width: 60%;
+    height: calc(100% - 250px);
+    z-index: 3;
+    display: none;
+    touch-action: none;
+  }
+  body.touch-enabled #lookZone {
+    display: block;
+  }
+
+  .bottom-help {
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .help-strip {
+    background: rgba(7, 11, 20, 0.72);
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: clamp(10px, 1.05vw, 12px);
+    color: #94a3b8;
+    letter-spacing: 0.03em;
+    text-align: center;
+    pointer-events: auto;
+    cursor: pointer;
+  }
+  .help-strip strong {
+    color: #f1f5f9;
+    font-weight: 600;
+  }
+
+  @media (max-width: 820px) {
+    .bottom-help { display: none; }
+    .brand-sub { display: none; }
+    .hud-btn { padding: 6px 8px; font-size: 10.5px; min-height: 36px; }
+    .target-chip { padding: 6px 8px; font-size: 10.5px; min-height: 36px; }
+    .right-touch-deck {
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .trim-cluster .hud-btn {
+      min-width: 58px;
+      min-height: 38px;
+      font-size: 10px;
+    }
+    #missionBox {
+      width: min(230px, calc(100vw - 24px));
+      padding: 8px 10px;
+    }
+  }
+</style>
+</head>
+<body>
+  <canvas id="glCanvas"></canvas>
+  <canvas id="hudCanvas"></canvas>
+  <div id="lookZone" aria-label="Touch Look Area"></div>
+
+  <button type="button" id="btnShowHud" title="Restore HUD (H)">SHOW HUD [H]</button>
+
+  <aside id="logDrawer" aria-label="Mission Discovery Log">
+    <div class="log-header">
+      <span class="log-title">PLANET &amp; MOON LOG</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span class="log-count" id="logCountText">0 / 13 SURVEYED</span>
+        <button type="button" class="mission-mini-btn" id="btnCloseLog" style="flex:0; padding:3px 7px;">×</button>
+      </div>
+    </div>
+    <div class="log-list" id="logList"></div>
+  </aside>
+
+  <div id="victoryModal" role="dialog" aria-label="Mission Complete">
+    <div class="victory-title">ALL 13 RINGS CLEARED · YOU WIN!</div>
+    <div class="victory-text">
+      You flew through every orbital ring across the Solar System. Play again or hide the rings for peaceful free flight.
+    </div>
+    <div class="victory-btns">
+      <button type="button" class="hud-btn scan-btn" id="btnResetRings">PLAY AGAIN</button>
+      <button type="button" class="hud-btn" id="btnVictoryFreeFlight">HIDE RINGS</button>
+    </div>
+  </div>
+
+  <div id="uiOverlay">
+    <div style="display:flex; flex-direction:column;">
+      <header class="top-bar">
+        <div class="brand-block">
+          <span class="brand-title">MATIQSSON SPACEXPLORER AB</span>
+          <span class="brand-sub" id="sysStatusText">SOL SYSTEM · 0 / 13 RINGS</span>
+        </div>
+        <div class="quick-actions">
+          <div class="target-group" title="Select which planet or moon to track and fly to (Tab)">
+            <button type="button" class="hud-btn" id="btnPrevTarget" title="Previous planet or moon">◀</button>
+            <button type="button" class="target-chip" id="btnNextTarget" title="Click to switch target planet/moon (Tab)">
+              TARGET: <span id="targetChipName">EARTH</span>
+            </button>
+            <button type="button" class="hud-btn" id="btnNextTargetArrow" title="Next planet or moon (Tab)">▶</button>
+          </div>
+          <button type="button" class="hud-btn warp-btn" id="btnWarpTop" title="Auto-fly fast toward the selected target (F)">WARP TO TARGET [F]</button>
+          <button type="button" class="hud-btn orbit-btn" id="btnOrbitTop" title="Circle smoothly around the selected target (O)">AUTO-ORBIT [O]</button>
+          <button type="button" class="hud-btn scan-btn" id="btnScanTop" title="Hold near a planet to scan its science data (X)">SCAN [X]</button>
+          <button type="button" class="hud-btn rings-btn active" id="btnRingsToggle" title="Show or hide checkpoint rings (G)">RINGS: ON [G]</button>
+          <button type="button" class="hud-btn" id="btnLogToggle" title="Open full list of planets &amp; moons (L)">PLANETS [L]</button>
+          <button type="button" class="hud-btn" id="btnAudioToggle" title="Turn thruster &amp; scanner sound on/off">SOUND: OFF</button>
+          <button type="button" class="hud-btn" id="btnTouchToggle" title="Show/hide on-screen flight stick &amp; Boost pad">TOUCH PAD</button>
+          <button type="button" class="hud-btn" id="btnHudToggle" title="Hide all HUD overlays completely (H)">HIDE HUD [H]</button>
+        </div>
+      </header>
+
+      <section id="missionBox" aria-label="Mission Objective">
+        <div class="mission-head">
+          <span class="mission-title">RING CHALLENGE</span>
+          <span class="mission-count" id="missionCountText">0 / 13</span>
+        </div>
+        <div class="mission-desc" id="missionDescText">
+          Fly through all 13 orbital checkpoint rings across the Solar System to win!
+        </div>
+        <div class="mission-bar">
+          <div class="mission-bar-fill" id="missionBarFill"></div>
+        </div>
+        <div class="mission-actions">
+          <button type="button" class="mission-mini-btn" id="btnHideRingsBox">FREE FLIGHT (HIDE RINGS)</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="touchControls">
+      <div class="joy-zone" id="joyZone">
+        <div class="joy-crosshair"></div>
+        <div class="joy-knob" id="joyKnob"></div>
+        <span class="joy-label">FLY / STRAFE</span>
+      </div>
+
+      <div class="right-touch-deck">
+        <div class="trim-cluster">
+          <button type="button" class="hud-btn" id="btnRollL" title="Roll Left">↺ ROLL</button>
+          <button type="button" class="hud-btn" id="btnRollR" title="Roll Right">ROLL ↻</button>
+          <button type="button" class="hud-btn" id="btnUp" title="Move Up">↑ UP</button>
+          <button type="button" class="hud-btn" id="btnDown" title="Move Down">↓ DOWN</button>
+        </div>
+
+        <button type="button" class="boost-zone" id="btnBoost" title="Hold for Turbo Boost (Drag to Steer)">
+          <div class="boost-zone-ring"></div>
+          <span class="boost-zone-title">BOOST</span>
+          <span class="boost-zone-sub">HOLD · STEER</span>
+          <span class="joy-label">TURBO THRUST</span>
+        </button>
+      </div>
+    </div>
+
+    <footer class="bottom-help">
+      <div class="help-strip" id="promptStrip">
+        <strong>CLICK SPACE</strong> Steer · <strong>W/S/A/D</strong> Move · <strong>SPACE/C</strong> Up/Down · <strong>Q/E</strong> Roll · <strong>SHIFT</strong> Boost · <strong>F</strong> Warp to Target · <strong>O</strong> Auto-Orbit · <strong>G</strong> Rings · <strong>H</strong> Hide HUD
+      </div>
+    </footer>
+  </div>
+
+<script>
+"use strict";
+
+/* ============================================================================
+   1. DATA-DRIVEN STAR SYSTEM REGISTRY (Cinematic Diorama Scale + Moons)
+   ============================================================================ */
+const STAR_SYSTEM = {
+  id: "sol-system",
+  name: "Sol System",
+  star: {
+    id: "sun",
+    name: "The Sun",
+    type: 0, // 0: Star
+    radius: 420.0,
+    orbitRadius: 0.0,
+    orbitSpeed: 0.0,
+    orbitPhase: 0.0,
+    rotationSpeed: 0.04,
+    axialTilt: 0.12,
+    baseColor: [0.96, 0.56, 0.14],
+    secColor: [1.0, 0.90, 0.52],
+    atmoColor: [0.98, 0.52, 0.16],
+    atmoStrength: 0.95,
+    noiseScale: 4.0,
+    cloudDensity: 0.0,
+    ringInner: 0.0,
+    ringOuter: 0.0,
+    subtitle: "G2V Main-Sequence Star",
+    stats: "1.99e30 kg · 5,778 K Photosphere",
+    fact: "Contains 99.86% of the Solar System's mass; convective plasma granules span thousands of kilometers across its surface."
+  },
+  bodies: [
+    {
+      id: "mercury",
+      name: "Mercury",
+      type: 1,
+      radius: 34.0,
+      orbitRadius: 2400.0,
+      orbitSpeed: 0.015,
+      orbitPhase: 0.35,
+      rotationSpeed: 0.05,
+      axialTilt: 0.03,
+      baseColor: [0.58, 0.55, 0.52],
+      secColor: [0.30, 0.28, 0.27],
+      atmoColor: [0.65, 0.62, 0.58],
+      atmoStrength: 0.08,
+      noiseScale: 6.2,
+      cloudDensity: 0.0,
+      ringInner: 0.0,
+      ringOuter: 0.0,
+      subtitle: "Innermost Iron-Core World",
+      stats: "0.38 g · -180 to +430 °C",
+      fact: "A dense metallic core spans 85% of Mercury's radius, locked in a 3:2 spin-orbit resonance around the Sun."
+    },
+    {
+      id: "venus",
+      name: "Venus",
+      type: 2,
+      radius: 66.0,
+      orbitRadius: 4300.0,
+      orbitSpeed: 0.011,
+      orbitPhase: 1.05,
+      rotationSpeed: -0.03,
+      axialTilt: 0.05,
+      baseColor: [0.84, 0.68, 0.42],
+      secColor: [0.94, 0.84, 0.60],
+      atmoColor: [0.92, 0.78, 0.52],
+      atmoStrength: 0.72,
+      noiseScale: 3.4,
+      cloudDensity: 0.92,
+      ringInner: 0.0,
+      ringOuter: 0.0,
+      subtitle: "Super-Rotating Sulfuric World",
+      stats: "0.90 g · 464 °C Surface",
+      fact: "Upper sulfuric-acid cloud decks super-rotate around the globe in just four Earth days beneath golden sunlight."
+    },
+    {
+      id: "earth",
+      name: "Earth",
+      type: 3,
+      radius: 74.0,
+      orbitRadius: 6800.0,
+      orbitSpeed: 0.008,
+      orbitPhase: 1.65,
+      rotationSpeed: 0.12,
+      axialTilt: 0.41,
+      baseColor: [0.06, 0.28, 0.58],
+      secColor: [0.18, 0.48, 0.26],
+      atmoColor: [0.35, 0.68, 0.98],
+      atmoStrength: 0.86,
+      noiseScale: 4.3,
+      cloudDensity: 0.55,
+      ringInner: 0.0,
+      ringOuter: 0.0,
+      subtitle: "Oceanic Biosphere · 1.00 AU",
+      stats: "1.00 g · 15 °C Mean · 23.9 h Day",
+      fact: "Liquid water covers 71% of the crust; Rayleigh scattering paints a razor-thin cobalt atmospheric limb against space.",
+      moons: [
+        {
+          id: "luna",
+          name: "Luna",
+          type: 6,
+          radius: 22.0,
+          orbitRadius: 340.0,
+          orbitSpeed: 0.14,
+          orbitPhase: 0.75,
+          rotationSpeed: 0.14,
+          axialTilt: 0.09,
+          baseColor: [0.68, 0.69, 0.72],
+          secColor: [0.34, 0.35, 0.38],
+          atmoColor: [0.70, 0.75, 0.82],
+          atmoStrength: 0.04,
+          noiseScale: 5.5,
+          cloudDensity: 0.0,
+          ringInner: 0.0,
+          ringOuter: 0.0,
+          subtitle: "Earth's Natural Satellite",
+          stats: "0.165 g · Basalt Maria",
+          fact: "Dark basaltic maria trace ancient volcanic floodplains carved by early Solar System impacts."
+        }
+      ]
+    },
+    {
+      id: "mars",
+      name: "Mars",
+      type: 1,
+      radius: 48.0,
+      orbitRadius: 9600.0,
+      orbitSpeed: 0.006,
+      orbitPhase: 2.35,
+      rotationSpeed: 0.13,
+      axialTilt: 0.44,
+      baseColor: [0.76, 0.34, 0.20],
+      secColor: [0.42, 0.20, 0.14],
+      atmoColor: [0.85, 0.52, 0.38],
+      atmoStrength: 0.42,
+      noiseScale: 5.0,
+      cloudDensity: 0.12,
+      ringInner: 0.0,
+      ringOuter: 0.0,
+      subtitle: "Oxide Regolith & Polar Caps",
+      stats: "0.38 g · -65 °C Mean · 24.6 h Day",
+      fact: "Home to Olympus Mons and Valles Marineris, dusted by iron-oxide plains and seasonal CO2 polar ice caps."
+    },
+    {
+      id: "jupiter",
+      name: "Jupiter",
+      type: 4,
+      radius: 185.0,
+      orbitRadius: 18500.0,
+      orbitSpeed: 0.0036,
+      orbitPhase: 0.92,
+      rotationSpeed: 0.26,
+      axialTilt: 0.06,
+      baseColor: [0.82, 0.68, 0.50],
+      secColor: [0.58, 0.36, 0.26],
+      atmoColor: [0.88, 0.74, 0.56],
+      atmoStrength: 0.55,
+      noiseScale: 4.5,
+      cloudDensity: 0.85,
+      ringInner: 0.0,
+      ringOuter: 0.0,
+      subtitle: "Jovian Gas Giant · Great Red Vortex",
+      stats: "2.53 g · 9.9 h Rotation",
+      fact: "Alternating ammonia cloud belts and counter-rotating jet streams drive the centuries-old Great Red Spot anticyclone.",
+      moons: [
+        {
+          id: "io",
+          name: "Io",
+          type: 6,
+          radius: 26.0,
+          orbitRadius: 460.0,
+          orbitSpeed: 0.19,
+          orbitPhase: 1.2,
+          rotationSpeed: 0.19,
+          axialTilt: 0.02,
+          baseColor: [0.86, 0.74, 0.30],
+          secColor: [0.56, 0.24, 0.12],
+          atmoColor: [0.88, 0.72, 0.32],
+          atmoStrength: 0.18,
+          noiseScale: 6.2,
+          cloudDensity: 0.0,
+          ringInner: 0.0,
+          ringOuter: 0.0,
+          subtitle: "Volcanic Galilean Moon",
+          stats: "0.18 g · 400+ Active Volcanoes",
+          fact: "Tidal flexing from Jupiter heats Io's interior, painting its surface in sulfur-gold and silicate calderas."
+        },
+        {
+          id: "europa",
+          name: "Europa",
+          type: 6,
+          radius: 24.0,
+          orbitRadius: 640.0,
+          orbitSpeed: 0.12,
+          orbitPhase: 3.4,
+          rotationSpeed: 0.12,
+          axialTilt: 0.04,
+          baseColor: [0.78, 0.80, 0.82],
+          secColor: [0.46, 0.36, 0.30],
+          atmoColor: [0.68, 0.78, 0.88],
+          atmoStrength: 0.16,
+          noiseScale: 7.5,
+          cloudDensity: 0.0,
+          ringInner: 0.0,
+          ringOuter: 0.0,
+          subtitle: "Subsurface Ocean Ice Moon",
+          stats: "0.13 g · Global Saline Ocean",
+          fact: "Reddish lineae fractures crisscross a young water-ice crust floating above a deep subsurface ocean."
+        }
+      ]
+    },
+    {
+      id: "saturn",
+      name: "Saturn",
+      type: 4,
+      radius: 155.0,
+      orbitRadius: 26000.0,
+      orbitSpeed: 0.0024,
+      orbitPhase: 1.98,
+      rotationSpeed: 0.24,
+      axialTilt: 0.46,
+      baseColor: [0.84, 0.74, 0.54],
+      secColor: [0.62, 0.52, 0.38],
+      atmoColor: [0.88, 0.78, 0.58],
+      atmoStrength: 0.52,
+      noiseScale: 3.8,
+      cloudDensity: 0.7,
+      ringInner: 1.38,
+      ringOuter: 2.38,
+      subtitle: "Ringed Gas Giant · Cassini Division",
+      stats: "1.06 g · 10.7 h Rotation",
+      fact: "Ice-and-rock ring sheets stretch hundreds of thousands of kilometers wide while casting crisp shadows across Saturn.",
+      moons: [
+        {
+          id: "titan",
+          name: "Titan",
+          type: 6,
+          radius: 32.0,
+          orbitRadius: 680.0,
+          orbitSpeed: 0.09,
+          orbitPhase: 2.3,
+          rotationSpeed: 0.09,
+          axialTilt: 0.3,
+          baseColor: [0.82, 0.56, 0.24],
+          secColor: [0.54, 0.34, 0.16],
+          atmoColor: [0.86, 0.62, 0.28],
+          atmoStrength: 0.75,
+          noiseScale: 3.0,
+          cloudDensity: 0.7,
+          ringInner: 0.0,
+          ringOuter: 0.0,
+          subtitle: "Nitrogen-Haze Hydrocarbon Moon",
+          stats: "0.14 g · 1.45 atm Nitrogen",
+          fact: "The only known moon with a thick atmosphere and liquid methane-ethane seas beneath golden photochemical haze."
+        }
+      ]
+    },
+    {
+      id: "uranus",
+      name: "Uranus",
+      type: 5,
+      radius: 96.0,
+      orbitRadius: 34000.0,
+      orbitSpeed: 0.0017,
+      orbitPhase: 0.54,
+      rotationSpeed: -0.18,
+      axialTilt: 1.42,
+      baseColor: [0.48, 0.76, 0.78],
+      secColor: [0.34, 0.58, 0.66],
+      atmoColor: [0.56, 0.82, 0.86],
+      atmoStrength: 0.68,
+      noiseScale: 2.6,
+      cloudDensity: 0.4,
+      ringInner: 1.50,
+      ringOuter: 1.78,
+      subtitle: "Sideways Methane Ice Giant",
+      stats: "0.89 g · 97.8° Axial Tilt",
+      fact: "Rolled nearly onto its orbital plane, Uranus presents vertical ring arcs and pale cyan methane cloud tops."
+    },
+    {
+      id: "neptune",
+      name: "Neptune",
+      type: 5,
+      radius: 92.0,
+      orbitRadius: 42000.0,
+      orbitSpeed: 0.0012,
+      orbitPhase: 2.82,
+      rotationSpeed: 0.20,
+      axialTilt: 0.49,
+      baseColor: [0.22, 0.42, 0.84],
+      secColor: [0.14, 0.24, 0.62],
+      atmoColor: [0.34, 0.56, 0.94],
+      atmoStrength: 0.74,
+      noiseScale: 3.6,
+      cloudDensity: 0.6,
+      ringInner: 0.0,
+      ringOuter: 0.0,
+      subtitle: "Supersonic Outer Ice Giant",
+      stats: "1.14 g · 2,100 km/h Winds",
+      fact: "Driven by internal heat, Neptune sustains the fastest supersonic winds in the Solar System."
+    }
+  ]
+};
+
+// Flatten Star, Planets, and Moons into ALL_BODIES with parent index tracking
+const ALL_BODIES = [];
+{
+  const addEntry = (cfg, parentIdx, isPlanetOrbit) => {
+    const idx = ALL_BODIES.length;
+    ALL_BODIES.push(Object.assign({}, cfg, {
+      index: idx,
+      parentIdx: parentIdx,
+      isPlanetOrbit: isPlanetOrbit,
+      discovered: false,
+      ringCleared: false,
+      scanProgress: 0.0
+    }));
+    return idx;
+  };
+
+  addEntry(STAR_SYSTEM.star, -1, false);
+  for (let i = 0; i < STAR_SYSTEM.bodies.length; i++) {
+    const p = STAR_SYSTEM.bodies[i];
+    const pIdx = addEntry(p, 0, true);
+    if (p.moons) {
+      for (let m = 0; m < p.moons.length; m++) {
+        addEntry(p.moons[m], pIdx, false);
+      }
+    }
+  }
+}
+const BODY_COUNT = ALL_BODIES.length;
+const ASTEROID_COUNT = 520;
+const PSTAR_COUNT = 720;
+const DUST_COUNT = 220;
+
+/* ============================================================================
+   2. PREALLOCATED FLOAT64 & FLOAT32 MATH BUFFERS (ZERO PER-FRAME ALLOCATION)
+   ============================================================================ */
+const bodyPos64 = new Float64Array(BODY_COUNT * 3);
+const gatePos64 = new Float64Array(BODY_COUNT * 3);
+const shipPos64 = new Float64Array(3);
+const shipVel64 = new Float64Array(3);
+
+const relPos32 = new Float32Array(3);
+const sunRelPos32 = new Float32Array(3);
+const shipPos32 = new Float32Array(3);
+const shipQuat = new Float32Array([0, 0, 0, 1]);
+const tempQuatA = new Float32Array(4);
+const tempQuatB = new Float32Array(4);
+
+const vecForward = new Float32Array(3);
+const vecRight = new Float32Array(3);
+const vecUp = new Float32Array(3);
+const tempVec3 = new Float32Array(3);
+
+const projMat = new Float32Array(16);
+const viewRotMat = new Float32Array(16);
+const viewProjMat = new Float32Array(16);
+const bodyAxis32 = new Float32Array(3);
+const lineColor4 = new Float32Array(4);
+
+// Preallocated 3D Parallax Moving Stars Pool (Seamless wrap-around, spherical fade)
+const PSTAR_BOX = 900.0;
+const pStarOrigin64 = new Float64Array(PSTAR_COUNT * 3);
+const pStarSize = new Float32Array(PSTAR_COUNT);
+const pStarVerts32 = new Float32Array(PSTAR_COUNT * 4); // (x, y, z, size)
+for (let i = 0; i < PSTAR_COUNT; i++) {
+  pStarOrigin64[i * 3 + 0] = (Math.random() - 0.5) * PSTAR_BOX;
+  pStarOrigin64[i * 3 + 1] = (Math.random() - 0.5) * PSTAR_BOX;
+  pStarOrigin64[i * 3 + 2] = (Math.random() - 0.5) * PSTAR_BOX;
+  pStarSize[i] = 0.65 + Math.pow(Math.random(), 2.0) * 1.15;
+}
+
+// Preallocated 3D Velocity Streak Dust Pool (Wrap-around cockpit volume)
+const DUST_BOX = 260.0;
+const dustOrigin64 = new Float64Array(DUST_COUNT * 3);
+const dustVerts32 = new Float32Array(DUST_COUNT * 2 * 4); // 2 verts/line * (x, y, z, alpha)
+for (let i = 0; i < DUST_COUNT; i++) {
+  dustOrigin64[i * 3 + 0] = (Math.random() - 0.5) * DUST_BOX;
+  dustOrigin64[i * 3 + 1] = (Math.random() - 0.5) * DUST_BOX;
+  dustOrigin64[i * 3 + 2] = (Math.random() - 0.5) * DUST_BOX;
+}
+
+function quatNormalize(q) {
+  const len = Math.hypot(q[0], q[1], q[2], q[3]) || 1.0;
+  const inv = 1.0 / len;
+  q[0] *= inv; q[1] *= inv; q[2] *= inv; q[3] *= inv;
+}
+
+function quatFromAxisAngle(out, ax, ay, az, angle) {
+  const half = angle * 0.5;
+  const s = Math.sin(half);
+  out[0] = ax * s;
+  out[1] = ay * s;
+  out[2] = az * s;
+  out[3] = Math.cos(half);
+}
+
+function quatMultiply(out, a, b) {
+  const ax = a[0], ay = a[1], az = a[2], aw = a[3];
+  const bx = b[0], by = b[1], bz = b[2], bw = b[3];
+  out[0] = aw * bx + ax * bw + ay * bz - az * by;
+  out[1] = aw * by - ax * bz + ay * bw + az * bx;
+  out[2] = aw * bz + ax * by - ay * bx + az * bw;
+  out[3] = aw * bw - ax * bx - ay * by - az * bz;
+}
+
+function updateBasisVectorsFromQuat(q) {
+  const x = q[0], y = q[1], z = q[2], w = q[3];
+  const x2 = x + x, y2 = y + y, z2 = z + z;
+  const xx = x * x2, xy = x * y2, xz = x * z2;
+  const yy = y * y2, yz = y * z2, zz = z * z2;
+  const wx = w * x2, wy = w * y2, wz = w * z2;
+
+  vecRight[0] = 1.0 - (yy + zz);
+  vecRight[1] = xy + wz;
+  vecRight[2] = xz - wy;
+
+  vecUp[0] = xy - wz;
+  vecUp[1] = 1.0 - (xx + zz);
+  vecUp[2] = yz + wx;
+
+  vecForward[0] = -(xz + wy);
+  vecForward[1] = -(yz - wx);
+  vecForward[2] = -(1.0 - (xx + yy));
+}
+
+function lookAtQuat(out, eyeX, eyeY, eyeZ, tgtX, tgtY, tgtZ) {
+  let fx = tgtX - eyeX, fy = tgtY - eyeY, fz = tgtZ - eyeZ;
+  const fl = Math.hypot(fx, fy, fz) || 1.0;
+  fx /= fl; fy /= fl; fz /= fl;
+
+  // Cross(forward, worldUp) -> right
+  let rx = -fz, ry = 0.0, rz = fx;
+  const rl = Math.hypot(rx, ry, rz);
+  if (rl < 1e-4) {
+    rx = 1.0; rz = 0.0;
+  } else {
+    rx /= rl; rz /= rl;
+  }
+  // Cross(right, forward) -> up
+  const ux = ry * fz - rz * fy;
+  const uy = rz * fx - rx * fz;
+  const uz = rx * fy - ry * fx;
+
+  // Matrix columns: [right, up, -forward]
+  const m00 = rx,  m01 = ux, m02 = -fx;
+  const m10 = ry,  m11 = uy, m12 = -fy;
+  const m20 = rz,  m21 = uz, m22 = -fz;
+  const tr = m00 + m11 + m22;
+  if (tr > 0) {
+    const s = Math.sqrt(tr + 1.0) * 2.0;
+    out[3] = 0.25 * s;
+    out[0] = (m21 - m12) / s;
+    out[1] = (m02 - m20) / s;
+    out[2] = (m10 - m01) / s;
+  } else if (m00 > m11 && m00 > m22) {
+    const s = Math.sqrt(1.0 + m00 - m11 - m22) * 2.0;
+    out[3] = (m21 - m12) / s;
+    out[0] = 0.25 * s;
+    out[1] = (m01 + m10) / s;
+    out[2] = (m02 + m20) / s;
+  } else if (m11 > m22) {
+    const s = Math.sqrt(1.0 + m11 - m00 - m22) * 2.0;
+    out[3] = (m02 - m20) / s;
+    out[0] = (m01 + m10) / s;
+    out[1] = 0.25 * s;
+    out[2] = (m12 + m21) / s;
+  } else {
+    const s = Math.sqrt(1.0 + m22 - m00 - m11) * 2.0;
+    out[3] = (m10 - m01) / s;
+    out[0] = (m02 + m20) / s;
+    out[1] = (m12 + m21) / s;
+    out[2] = 0.25 * s;
+  }
+  quatNormalize(out);
+}
+
+function buildViewRotationMatrix(out, right, up, forward) {
+  out[0] = right[0];    out[4] = right[1];    out[8]  = right[2];    out[12] = 0;
+  out[1] = up[0];       out[5] = up[1];       out[9]  = up[2];       out[13] = 0;
+  out[2] = -forward[0]; out[6] = -forward[1]; out[10] = -forward[2]; out[14] = 0;
+  out[3] = 0;           out[7] = 0;           out[11] = 0;           out[15] = 1;
+}
+
+function buildPerspectiveMatrix(out, fovRad, aspect, near, far) {
+  const f = 1.0 / Math.tan(fovRad * 0.5);
+  const nf = 1.0 / (near - far);
+  out.fill(0);
+  out[0] = f / aspect;
+  out[5] = f;
+  out[10] = (far + near) * nf;
+  out[11] = -1.0;
+  out[14] = (2.0 * far * near) * nf;
+}
+
+function mat4Multiply(out, a, b) {
+  for (let c = 0; c < 4; c++) {
+    const b0 = b[c * 4 + 0], b1 = b[c * 4 + 1], b2 = b[c * 4 + 2], b3 = b[c * 4 + 3];
+    out[c * 4 + 0] = a[0] * b0 + a[4] * b1 + a[8]  * b2 + a[12] * b3;
+    out[c * 4 + 1] = a[1] * b0 + a[5] * b1 + a[9]  * b2 + a[13] * b3;
+    out[c * 4 + 2] = a[2] * b0 + a[6] * b1 + a[10] * b2 + a[14] * b3;
+    out[c * 4 + 3] = a[3] * b0 + a[7] * b1 + a[11] * b2 + a[15] * b3;
+  }
+}
+
+/* ============================================================================
+   3. PROCEDURAL WEBAUDIO SOUND ENGINE (ZERO EXTERNAL FILES)
+   ============================================================================ */
+let audioCtx = null;
+let audioEnabled = false;
+let audioInitialized = false;
+let engineGain = null;
+let engineOsc = null;
+let noiseGain = null;
+let noiseFilter = null;
+
+function initAudio() {
+  if (audioInitialized) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return;
+  audioCtx = new AC();
+
+  // Master compressor/gain
+  const master = audioCtx.createGain();
+  master.gain.value = 0.42;
+  master.connect(audioCtx.destination);
+
+  // Subtle thruster/ship hum oscillator
+  engineOsc = audioCtx.createOscillator();
+  engineOsc.type = "triangle";
+  engineOsc.frequency.value = 48;
+  engineGain = audioCtx.createGain();
+  engineGain.gain.value = 0.0;
+  engineOsc.connect(engineGain);
+  engineGain.connect(master);
+  engineOsc.start();
+
+  // Filtered brown/pink thruster noise
+  const bufLen = audioCtx.sampleRate * 2;
+  const buf = audioCtx.createBuffer(1, bufLen, audioCtx.sampleRate);
+  const data = buf.getChannelData(0);
+  let lastOut = 0.0;
+  for (let i = 0; i < bufLen; i++) {
+    const white = Math.random() * 2 - 1;
+    lastOut = (lastOut + 0.03 * white) / 1.03;
+    data[i] = lastOut * 3.5;
+  }
+  const noiseSrc = audioCtx.createBufferSource();
+  noiseSrc.buffer = buf;
+  noiseSrc.loop = true;
+
+  noiseFilter = audioCtx.createBiquadFilter();
+  noiseFilter.type = "lowpass";
+  noiseFilter.frequency.value = 180;
+
+  noiseGain = audioCtx.createGain();
+  noiseGain.gain.value = 0.0;
+
+  noiseSrc.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(master);
+  noiseSrc.start();
+
+  audioInitialized = true;
+  audioEnabled = true;
+  const audioBtn = document.getElementById("btnAudioToggle");
+  audioBtn.classList.add("active");
+  audioBtn.textContent = "SOUND: ON";
+}
+
+function toggleAudio() {
+  if (!audioInitialized) {
+    initAudio();
+    return;
+  }
+  audioEnabled = !audioEnabled;
+  if (audioCtx && audioCtx.state === "suspended" && audioEnabled) {
+    audioCtx.resume();
+  }
+  const audioBtn = document.getElementById("btnAudioToggle");
+  audioBtn.classList.toggle("active", audioEnabled);
+  audioBtn.textContent = audioEnabled ? "SOUND: ON" : "SOUND: OFF";
+  if (!audioEnabled && engineGain && noiseGain && audioCtx) {
+    engineGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+    noiseGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.05);
+  }
+}
+
+function playTone(freqStart, freqEnd, dur, vol, type) {
+  if (!audioEnabled || !audioCtx || audioCtx.state !== "running") return;
+  const t = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
+  osc.type = type || "sine";
+  osc.frequency.setValueAtTime(freqStart, t);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(20, freqEnd), t + dur);
+  g.gain.setValueAtTime(0.001, t);
+  g.gain.linearRampToValueAtTime(vol, t + 0.02);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  osc.connect(g);
+  g.connect(audioCtx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.02);
+}
+
+function playDiscoveryChime() {
+  playTone(523.25, 523.25, 0.25, 0.08, "sine");
+  setTimeout(() => playTone(659.25, 659.25, 0.28, 0.08, "sine"), 90);
+  setTimeout(() => playTone(783.99, 1046.5, 0.45, 0.09, "triangle"), 180);
+}
+
+function updateAudioTelemetry(speed, boosting, warping, scanning) {
+  if (!audioEnabled || !audioCtx || audioCtx.state !== "running") return;
+  const t = audioCtx.currentTime;
+  const speedNorm = Math.min(1.0, speed / 340.0);
+  const targetHum = 0.015 + speedNorm * 0.055 + (boosting ? 0.038 : 0.0) + (warping ? 0.055 : 0.0);
+  const targetNoise = speedNorm * 0.075 + (boosting ? 0.095 : 0.0) + (warping ? 0.11 : 0.0);
+  engineGain.gain.setTargetAtTime(targetHum, t, 0.09);
+  engineOsc.frequency.setTargetAtTime(42 + speedNorm * 48 + (boosting ? 14 : 0) + (warping ? 36 : 0), t, 0.09);
+  noiseGain.gain.setTargetAtTime(targetNoise, t, 0.09);
+  noiseFilter.frequency.setTargetAtTime(150 + speedNorm * 580 + (boosting ? 420 : 0), t, 0.09);
+}
+
+/* ============================================================================
+   4. WEBGL 2 INITIALIZATION, CONTEXT RECOVERY & SHADERS
+   ============================================================================ */
+const glCanvas = document.getElementById("glCanvas");
+const hudCanvas = document.getElementById("hudCanvas");
+const ctx2d = hudCanvas.getContext("2d");
+
+glCanvas.addEventListener("webglcontextlost", (e) => {
+  e.preventDefault();
+  document.getElementById("sysStatusText").textContent = "WEBGL CONTEXT PAUSED";
+});
+glCanvas.addEventListener("webglcontextrestored", () => {
+  location.reload();
+});
+
+const gl = glCanvas.getContext("webgl2", {
+  alpha: false,
+  antialias: true,
+  depth: true,
+  powerPreference: "high-performance"
+});
+
+if (!gl) {
+  document.getElementById("sysStatusText").textContent = "WEBGL 2 REQUIRED";
+}
+
+function compileShader(type, source) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, source);
+  gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+    console.error(gl.getShaderInfoLog(s));
+  }
+  return s;
+}
+
+function createProgram(vsSource, fsSource) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compileShader(gl.VERTEX_SHADER, vsSource));
+  gl.attachShader(p, compileShader(gl.FRAGMENT_SHADER, fsSource));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(p));
+  }
+  return p;
+}
+
+/* --- A. Deep Black Space & Crisp Starfield Skybox Shader --- */
+const SKY_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec2 aPos;
+out vec2 vUV;
+void main() {
+  vUV = aPos;
+  gl_Position = vec4(aPos, 0.999999, 1.0);
+}`;
+
+const SKY_FS = `#version 300 es
+precision highp float;
+in vec2 vUV;
+out vec4 fragColor;
+
+uniform vec3 uCamRight;
+uniform vec3 uCamUp;
+uniform vec3 uCamForward;
+uniform float uAspect;
+uniform float uTanHalfFov;
+uniform vec3 uSunDir;
+uniform float uWarpFactor;
+uniform vec3 uVelDir;
+
+float hash31(vec3 p) {
+  p = fract(p * vec3(443.897, 441.423, 437.195));
+  p += dot(p, p.yzx + 19.19);
+  return fract((p.x + p.y) * p.z);
+}
+
+void main() {
+  vec3 rayDir = normalize(
+    uCamForward +
+    vUV.x * uAspect * uTanHalfFov * uCamRight +
+    vUV.y * uTanHalfFov * uCamUp
+  );
+
+  // Pure deep black outer space (zero painted skybox wall)
+  vec3 bg = vec3(0.0);
+
+  // Rich, clearly visible multi-tier starfield against deep black space
+  vec3 g1 = rayDir * 140.0;
+  vec3 c1 = floor(g1);
+  float h1 = hash31(c1);
+  if (h1 > 0.915) {
+    vec3 off = (vec3(hash31(c1 + 1.1), hash31(c1 + 2.2), hash31(c1 + 3.3)) - 0.5) * 0.54;
+    float d = length(fract(g1) - 0.5 - off);
+    float b = smoothstep(0.24, 0.0, d) * (0.45 + 0.55 * ((h1 - 0.915) / 0.085));
+    float temp = fract(h1 * 91.7);
+    vec3 starTint = mix(vec3(0.80, 0.89, 1.0), vec3(1.0, 0.91, 0.80), temp);
+    bg += starTint * (b * b * 1.35);
+  }
+
+  vec3 g2 = rayDir * 280.0;
+  vec3 c2 = floor(g2);
+  float h2 = hash31(c2);
+  if (h2 > 0.895) {
+    vec3 off2 = (vec3(hash31(c2 + 4.1), hash31(c2 + 5.2), hash31(c2 + 6.3)) - 0.5) * 0.50;
+    float d2 = length(fract(g2) - 0.5 - off2);
+    float b2 = smoothstep(0.25, 0.0, d2) * (0.40 + 0.60 * ((h2 - 0.895) / 0.105));
+    float t2 = fract(h2 * 43.1);
+    vec3 tint2 = mix(vec3(0.76, 0.86, 1.0), vec3(0.98, 0.92, 0.84), t2);
+    bg += tint2 * (b2 * 0.78);
+  }
+
+  vec3 g3 = rayDir * 520.0;
+  vec3 c3 = floor(g3);
+  float h3 = hash31(c3);
+  if (h3 > 0.860) {
+    vec3 off3 = (vec3(hash31(c3 + 7.1), hash31(c3 + 8.2), hash31(c3 + 9.3)) - 0.5) * 0.45;
+    float d3 = length(fract(g3) - 0.5 - off3);
+    float b3 = smoothstep(0.28, 0.0, d3) * (0.45 + 0.55 * ((h3 - 0.860) / 0.140));
+    bg += vec3(0.72, 0.78, 0.88) * (b3 * 0.42);
+  }
+
+  // Tight restrained solar glare only near the Sun direction
+  float sunCos = max(dot(rayDir, uSunDir), 0.0);
+  bg += vec3(1.0, 0.76, 0.45) * pow(sunCos, 64.0) * 0.22;
+
+  fragColor = vec4(bg, 1.0);
+}`;
+
+/* --- B. Unified Spherical Body Uber-Shader (Sun, Planets, Moons, Rings, Halos) --- */
+const UBER_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec3 aPosition;
+
+uniform mat4 uViewProj;
+uniform vec3 uBodyPos;
+uniform float uBodyRadius;
+uniform float uAxialTilt;
+uniform float uRotAngle;
+uniform float uPassScale;
+uniform float uFcoef;
+
+out vec3 vLocalPos;
+out vec3 vWorldNormal;
+out vec3 vWorldPos;
+out float vLogDepth;
+
+vec3 rotateY(vec3 p, float a) {
+  float c = cos(a), s = sin(a);
+  return vec3(c * p.x + s * p.z, p.y, -s * p.x + c * p.z);
+}
+
+vec3 rotateZ(vec3 p, float a) {
+  float c = cos(a), s = sin(a);
+  return vec3(c * p.x - s * p.y, s * p.x + c * p.y, p.z);
+}
+
+void main() {
+  vLocalPos = aPosition;
+  vec3 spun = rotateY(aPosition, uRotAngle);
+  vec3 tilted = rotateZ(spun, uAxialTilt);
+  vWorldNormal = normalize(tilted);
+
+  vec3 worldPos = uBodyPos + vWorldNormal * (uBodyRadius * uPassScale);
+  vWorldPos = worldPos;
+
+  gl_Position = uViewProj * vec4(worldPos, 1.0);
+  vLogDepth = 1.0 + gl_Position.w;
+  gl_Position.z = log2(max(1e-6, vLogDepth)) * uFcoef - 1.0;
+  gl_Position.z *= gl_Position.w;
+}`;
+
+const UBER_FS = `#version 300 es
+precision highp float;
+
+in vec3 vLocalPos;
+in vec3 vWorldNormal;
+in vec3 vWorldPos;
+in float vLogDepth;
+
+out vec4 fragColor;
+
+uniform int uBodyType;      // 0:Star, 1:Rocky, 2:Venus, 3:Earth, 4:GasGiant, 5:IceGiant, 6:Moon
+uniform int uRenderPass;    // 0:Surface, 1:Atmosphere/Corona Halo, 2:Planetary Rings
+uniform vec3 uBodyPos;
+uniform float uBodyRadius;
+uniform vec3 uSunPos;
+uniform vec3 uBaseColor;
+uniform vec3 uSecColor;
+uniform vec3 uAtmoColor;
+uniform float uAtmoStrength;
+uniform float uNoiseScale;
+uniform float uCloudDensity;
+uniform float uRingInner;
+uniform float uRingOuter;
+uniform float uTime;
+uniform float uFcoef;
+uniform vec3 uRingNormal;
+
+float hash31(vec3 p) {
+  p = fract(p * vec3(443.897, 441.423, 437.195));
+  p += dot(p, p.yzx + 19.19);
+  return fract((p.x + p.y) * p.z);
+}
+
+float noise3(vec3 p) {
+  vec3 i = floor(p);
+  vec3 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(
+    mix(mix(hash31(i), hash31(i + vec3(1,0,0)), f.x),
+        mix(hash31(i + vec3(0,1,0)), hash31(i + vec3(1,1,0)), f.x), f.y),
+    mix(mix(hash31(i + vec3(0,0,1)), hash31(i + vec3(1,0,1)), f.x),
+        mix(hash31(i + vec3(0,1,1)), hash31(i + vec3(1,1,1)), f.x), f.y),
+    f.z
+  );
+}
+
+float fbm(vec3 p) {
+  float v = 0.0;
+  float amp = 0.5;
+  for (int i = 0; i < 5; i++) {
+    v += amp * noise3(p);
+    p = p * 2.04 + vec3(13.1, 7.7, 5.3);
+    amp *= 0.5;
+  }
+  return v;
+}
+
+void main() {
+  gl_FragDepth = log2(max(1e-6, vLogDepth)) * uFcoef * 0.5;
+
+  vec3 V = normalize(-vWorldPos);
+  vec3 N = normalize(vWorldNormal);
+  vec3 L = normalize(uSunPos - vWorldPos);
+
+  /* --- PASS 2: RAY-INTERSECTED PLANETARY RINGS --- */
+  if (uRenderPass == 2) {
+    vec3 rayDir = normalize(vWorldPos);
+    float denom = dot(rayDir, uRingNormal);
+    if (abs(denom) < 1e-4) discard;
+    float t = dot(uBodyPos, uRingNormal) / denom;
+    if (t <= 0.0) discard;
+
+    vec3 hitPos = rayDir * t;
+    vec3 relHit = hitPos - uBodyPos;
+    float distNorm = length(relHit) / uBodyRadius;
+    if (distNorm < uRingInner || distNorm > uRingOuter) discard;
+
+    float ringW = 1.0 + length(hitPos);
+    gl_FragDepth = log2(max(1e-6, ringW)) * uFcoef * 0.5;
+
+    float rCoord = (distNorm - uRingInner) / (uRingOuter - uRingInner);
+    float bands = sin(rCoord * 95.0) * 0.5 + 0.5;
+    float fine = sin(rCoord * 360.0) * 0.5 + 0.5;
+    float cassini = smoothstep(0.014, 0.042, abs(rCoord - 0.58));
+    float edgeFade = smoothstep(0.0, 0.06, rCoord) * smoothstep(1.0, 0.92, rCoord);
+    float alpha = (0.38 + 0.55 * bands * fine) * cassini * edgeFade;
+
+    vec3 sunDirRing = normalize(uSunPos - hitPos);
+    float proj = dot(relHit, sunDirRing);
+    float perpSq = dot(relHit, relHit) - proj * proj;
+    float shadow = 1.0;
+    if (proj < 0.0 && perpSq < uBodyRadius * uBodyRadius) {
+      shadow = smoothstep(uBodyRadius * 0.92, uBodyRadius * 1.04, sqrt(max(0.0, perpSq)));
+    }
+
+    vec3 ringCol = mix(uSecColor, uBaseColor * 1.08, bands);
+    fragColor = vec4(ringCol * (0.24 + 0.76 * shadow), alpha * 0.88);
+    return;
+  }
+
+  /* --- PASS 1: VOLUMETRIC CORONA / RAYLEIGH ATMOSPHERE HALO --- */
+  if (uRenderPass == 1) {
+    float rim = pow(1.0 - abs(dot(N, V)), 2.5);
+    if (uBodyType == 0) {
+      float flare = fbm(vLocalPos * 3.6 + vec3(uTime * 0.24));
+      float glow = pow(1.0 - abs(dot(N, V)), 2.0) * (0.72 + 0.42 * flare);
+      fragColor = vec4(mix(uBaseColor, uSecColor, glow) * 1.25, glow * uAtmoStrength * 0.72);
+      return;
+    } else {
+      float sunFacing = smoothstep(-0.45, 0.70, dot(N, L));
+      float halo = rim * sunFacing * uAtmoStrength;
+      fragColor = vec4(uAtmoColor * 1.05, halo * 0.62);
+      return;
+    }
+  }
+
+  /* --- PASS 0: SURFACE SHADER --- */
+  vec3 P = normalize(vLocalPos);
+
+  if (uBodyType == 0) {
+    float n1 = fbm(P * uNoiseScale + vec3(uTime * 0.14, -uTime * 0.09, uTime * 0.11));
+    float n2 = fbm(P * (uNoiseScale * 2.5) - vec3(uTime * 0.24));
+    float plasma = clamp(n1 * 0.65 + n2 * 0.55, 0.0, 1.0);
+    float limb = clamp(dot(N, V), 0.0, 1.0);
+    vec3 col = mix(vec3(0.85, 0.24, 0.03), uBaseColor, smoothstep(0.15, 0.65, plasma));
+    col = mix(col, uSecColor * 1.4, smoothstep(0.55, 0.92, plasma));
+    col *= (0.58 + 0.62 * pow(limb, 0.42));
+    fragColor = vec4(col, 1.0);
+    return;
+  }
+
+  float NdotL = dot(N, L);
+  float diff = smoothstep(-0.14, 0.86, NdotL);
+  float twilight = smoothstep(-0.24, 0.16, NdotL) * (1.0 - smoothstep(0.0, 0.38, NdotL));
+  float fresnel = pow(1.0 - max(dot(N, V), 0.0), 3.1);
+
+  vec3 surfaceCol = uBaseColor;
+  float specMask = 0.0;
+  vec3 emissive = vec3(0.0);
+
+  if (uBodyType == 1) {
+    float h = fbm(P * uNoiseScale);
+    float craters = abs(noise3(P * uNoiseScale * 3.3) - 0.5) * 2.0;
+    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(0.24, 0.78, h * 0.8 + craters * 0.35));
+    if (uAtmoStrength > 0.25) {
+      float pole = smoothstep(0.76, 0.92, abs(P.y) + (h - 0.5) * 0.18);
+      surfaceCol = mix(surfaceCol, vec3(0.94, 0.96, 1.0), pole);
+    }
+  } else if (uBodyType == 2) {
+    vec3 swirlP = vec3(P.x + sin(P.y * 5.0 + uTime * 0.08) * 0.25, P.y * 2.2, P.z);
+    float bands = fbm(swirlP * uNoiseScale + vec3(uTime * 0.05, 0.0, 0.0));
+    surfaceCol = mix(uBaseColor, uSecColor, smoothstep(0.3, 0.75, bands));
+  } else if (uBodyType == 3) {
+    float elev = fbm(P * uNoiseScale);
+    float detail = fbm(P * uNoiseScale * 3.8);
+    float landMask = smoothstep(0.47, 0.51, elev);
+
+    vec3 ocean = mix(uBaseColor * 0.60, uBaseColor * 1.40, smoothstep(0.2, 0.47, elev));
+    vec3 land = mix(uSecColor, vec3(0.70, 0.60, 0.38), smoothstep(0.52, 0.74, elev + detail * 0.15));
+    land = mix(land, vec3(0.90, 0.92, 0.96), smoothstep(0.72, 0.86, elev));
+
+    surfaceCol = mix(ocean, land, landMask);
+    specMask = (1.0 - landMask) * 0.9;
+
+    float ice = smoothstep(0.75, 0.87, abs(P.y) + (elev - 0.5) * 0.15);
+    surfaceCol = mix(surfaceCol, vec3(0.95, 0.98, 1.0), ice);
+    specMask *= (1.0 - ice);
+
+    float clouds = fbm(P * (uNoiseScale * 1.45) + vec3(uTime * 0.03, 0.0, -uTime * 0.02));
+    float cloudAlpha = smoothstep(0.46, 0.72, clouds) * uCloudDensity;
+    surfaceCol = mix(surfaceCol, vec3(0.98, 0.99, 1.0), cloudAlpha);
+    specMask *= (1.0 - cloudAlpha);
+
+    // Subtle NASA night-side city lights on dark continents
+    float nightMask = smoothstep(-0.02, -0.25, NdotL);
+    float cityNoise = noise3(P * 38.0) * noise3(P * 14.0);
+    float cities = smoothstep(0.52, 0.74, cityNoise) * landMask * (1.0 - ice) * (1.0 - cloudAlpha * 0.8);
+    emissive = vec3(1.0, 0.76, 0.38) * cities * nightMask * 0.95;
+  } else if (uBodyType == 4) {
+    float turb = fbm(P * uNoiseScale + vec3(uTime * 0.03, 0.0, 0.0));
+    float lat = P.y * 11.0 + (turb - 0.5) * 2.2;
+    float zone = sin(lat * 3.14159) * 0.5 + 0.5;
+    float fineBand = cos(lat * 9.0 + turb * 4.0) * 0.5 + 0.5;
+    surfaceCol = mix(uSecColor, uBaseColor, zone * 0.7 + fineBand * 0.3);
+
+    if (uRingOuter < 0.1) {
+      vec3 spotCenter = normalize(vec3(0.65, -0.34, 0.68));
+      float dSpot = length(P - spotCenter);
+      float vortex = smoothstep(0.24, 0.05, dSpot);
+      surfaceCol = mix(surfaceCol, vec3(0.88, 0.28, 0.14), vortex * 0.85);
+    }
+  } else if (uBodyType == 5) {
+    float flow = fbm(vec3(P.x * 2.0 + uTime * 0.04, P.y * 6.5, P.z * 2.0));
+    float band = sin(P.y * 16.0 + flow * 3.0) * 0.5 + 0.5;
+    surfaceCol = mix(uSecColor, uBaseColor, 0.35 + 0.65 * band);
+  } else {
+    // TYPE 6: Moons (Cratered regolith, fractured Europa ice lineae, Io volcanism, Titan haze)
+    float mNoise = fbm(P * uNoiseScale);
+    float ridges = abs(noise3(P * uNoiseScale * 2.8) - 0.5) * 2.0;
+    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(0.22, 0.80, mNoise * 0.65 + ridges * 0.45));
+    if (uCloudDensity > 0.3) {
+      float haze = fbm(P * 3.2 + vec3(uTime * 0.04, 0.0, 0.0));
+      surfaceCol = mix(surfaceCol, uAtmoColor, haze * uCloudDensity * 0.55);
+    }
+  }
+
+  vec3 H = normalize(L + V);
+  float spec = pow(max(dot(N, H), 0.0), 48.0) * specMask * max(0.0, NdotL) * 0.42;
+  vec3 atmoRim = uAtmoColor * fresnel * uAtmoStrength * 0.85 * smoothstep(-0.42, 0.72, NdotL);
+  vec3 sunsetRim = vec3(0.95, 0.48, 0.30) * twilight * uAtmoStrength * 0.28;
+
+  // Natural solar illumination with subtle deep-space fill (no neon bounce)
+  vec3 sunTint = vec3(1.02, 0.98, 0.92);
+  vec3 spaceFill = vec3(0.025, 0.028, 0.036);
+  vec3 finalCol = surfaceCol * (spaceFill + sunTint * 0.98 * diff)
+                + vec3(1.0, 0.96, 0.90) * spec
+                + atmoRim
+                + sunsetRim
+                + emissive;
+
+  fragColor = vec4(finalCol, 1.0);
+}`;
+
+/* --- C. Orbital Trajectories Shader --- */
+const LINE_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec3 aPos;
+
+uniform mat4 uViewProj;
+uniform vec3 uOffset;
+uniform float uScale;
+uniform float uTilt;
+uniform float uSpin;
+uniform float uFcoef;
+
+void main() {
+  float cs = cos(uSpin), ss = sin(uSpin);
+  vec3 p = vec3(aPos.x * cs - aPos.z * ss, aPos.y, aPos.x * ss + aPos.z * cs);
+  float ct = cos(uTilt), st = sin(uTilt);
+  vec3 tilted = vec3(p.x, p.y * ct - p.z * st, p.y * st + p.z * ct);
+  vec3 worldPos = uOffset + tilted * uScale;
+
+  gl_Position = uViewProj * vec4(worldPos, 1.0);
+  float w = max(1e-4, 1.0 + gl_Position.w);
+  gl_Position.z = (log2(w) * uFcoef - 1.0) * gl_Position.w;
+}`;
+
+const LINE_FS = `#version 300 es
+precision highp float;
+uniform vec4 uColor;
+out vec4 fragColor;
+void main() {
+  fragColor = uColor;
+}`;
+
+/* --- C2. Bold Solid 3D Glowing Torus Checkpoint Gate Shader --- */
+const GATE_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec3 aNorm;
+
+uniform mat4 uViewProj;
+uniform vec3 uOffset;
+uniform float uScale;
+uniform float uTilt;
+uniform float uSpin;
+uniform float uFcoef;
+
+out vec3 vNormal;
+out vec3 vWorldPos;
+out vec3 vLocalPos;
+
+void main() {
+  vLocalPos = aPos;
+  float cs = cos(uSpin), ss = sin(uSpin);
+  vec3 p = vec3(aPos.x * cs - aPos.z * ss, aPos.y, aPos.x * ss + aPos.z * cs);
+  vec3 n = vec3(aNorm.x * cs - aNorm.z * ss, aNorm.y, aNorm.x * ss + aNorm.z * cs);
+  float ct = cos(uTilt), st = sin(uTilt);
+  vec3 tilted = vec3(p.x, p.y * ct - p.z * st, p.y * st + p.z * ct);
+  vec3 tiltedN = vec3(n.x, n.y * ct - n.z * st, n.y * st + n.z * ct);
+
+  vNormal = normalize(tiltedN);
+  vec3 worldPos = uOffset + tilted * uScale;
+  vWorldPos = worldPos;
+
+  gl_Position = uViewProj * vec4(worldPos, 1.0);
+  float w = max(1e-4, 1.0 + gl_Position.w);
+  gl_Position.z = (log2(w) * uFcoef - 1.0) * gl_Position.w;
+}`;
+
+const GATE_FS = `#version 300 es
+precision highp float;
+in vec3 vNormal;
+in vec3 vWorldPos;
+in vec3 vLocalPos;
+
+uniform vec4 uColor;
+uniform float uTime;
+out vec4 fragColor;
+
+void main() {
+  vec3 V = normalize(-vWorldPos);
+  vec3 N = normalize(vNormal);
+  float rim = pow(1.0 - abs(dot(N, V)), 1.6);
+  vec3 col = mix(uColor.rgb, vec3(1.0), 0.15 + 0.22 * rim);
+  fragColor = vec4(col, uColor.a * (0.68 + 0.20 * rim));
+}`;
+
+/* --- D. Instanced Asteroid Belt Shader --- */
+const AST_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in vec4 aOrbitParams; // radius, angle0, speed, yOffset
+layout(location = 2) in vec4 aRockProps;   // scale, tumbleSpeed, seed, tint
+
+uniform mat4 uViewProj;
+uniform vec3 uShipPos;
+uniform float uTime;
+uniform float uFcoef;
+
+out vec3 vNormal;
+out vec3 vWorldPos;
+out float vTint;
+out float vSeed;
+out float vLogDepth;
+
+void main() {
+  float ang = aOrbitParams.y + uTime * aOrbitParams.z;
+  vec3 center = vec3(cos(ang) * aOrbitParams.x, aOrbitParams.w, sin(ang) * aOrbitParams.x);
+  vec3 relCenter = center - uShipPos;
+
+  float t = uTime * aRockProps.y + aRockProps.z * 6.283;
+  float ct = cos(t), st = sin(t);
+  vec3 p = aPos;
+  p *= (0.78 + 0.35 * sin(p.x * 4.1 + aRockProps.z * 11.0) * cos(p.y * 3.7 - aRockProps.z * 7.0));
+  vec3 spun = vec3(p.x * ct - p.z * st, p.y, p.x * st + p.z * ct);
+  vec3 tilted = vec3(spun.x, spun.y * ct - spun.z * st, spun.y * st + spun.z * ct);
+
+  vNormal = normalize(tilted);
+  vec3 worldPos = relCenter + tilted * aRockProps.x;
+  vWorldPos = worldPos;
+  vTint = aRockProps.w;
+  vSeed = aRockProps.z;
+
+  gl_Position = uViewProj * vec4(worldPos, 1.0);
+  vLogDepth = 1.0 + gl_Position.w;
+  gl_Position.z = (log2(max(1e-6, vLogDepth)) * uFcoef - 1.0) * gl_Position.w;
+}`;
+
+const AST_FS = `#version 300 es
+precision highp float;
+in vec3 vNormal;
+in vec3 vWorldPos;
+in float vTint;
+in float vSeed;
+in float vLogDepth;
+
+uniform vec3 uSunPos;
+out vec4 fragColor;
+
+void main() {
+  vec3 N = normalize(vNormal);
+  vec3 L = normalize(uSunPos - vWorldPos);
+  float diff = smoothstep(-0.12, 0.9, dot(N, L));
+  vec3 rockBase = mix(vec3(0.32, 0.30, 0.28), vec3(0.56, 0.48, 0.40), vTint);
+  rockBase = mix(rockBase, vec3(0.42, 0.44, 0.46), smoothstep(0.60, 0.95, vSeed));
+  vec3 col = rockBase * (vec3(0.03, 0.03, 0.035) + vec3(1.0, 0.96, 0.90) * diff);
+  fragColor = vec4(col, 1.0);
+}`;
+
+/* --- E. 3D Parallax Moving Stars & Velocity Streaks Shaders --- */
+const PSTAR_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in float aSize;
+
+uniform mat4 uViewProj;
+uniform float uFcoef;
+uniform float uDpr;
+
+out float vAlpha;
+
+void main() {
+  float dist = length(aPos);
+  float edgeFade = smoothstep(445.0, 210.0, dist) * smoothstep(2.5, 14.0, dist);
+  vAlpha = edgeFade * clamp(0.45 + aSize * 0.35, 0.45, 0.98);
+  gl_Position = uViewProj * vec4(aPos, 1.0);
+  float w = max(1e-4, 1.0 + gl_Position.w);
+  gl_Position.z = (log2(w) * uFcoef - 1.0) * gl_Position.w;
+  gl_PointSize = clamp((230.0 / max(12.0, dist)) * aSize * uDpr, 1.5, 4.4);
+}`;
+
+const PSTAR_FS = `#version 300 es
+precision highp float;
+in float vAlpha;
+out vec4 fragColor;
+void main() {
+  vec2 uv = gl_PointCoord - 0.5;
+  float r2 = dot(uv, uv) * 4.0;
+  if (r2 > 1.0) discard;
+  float core = exp(-r2 * 2.8);
+  fragColor = vec4(0.88, 0.93, 1.0, core * vAlpha);
+}`;
+
+const DUST_VS = `#version 300 es
+precision highp float;
+layout(location = 0) in vec3 aPos;
+layout(location = 1) in float aAlpha;
+
+uniform mat4 uViewProj;
+uniform float uFcoef;
+out float vAlpha;
+
+void main() {
+  float dist = length(aPos);
+  float edgeFade = smoothstep(125.0, 52.0, dist) * smoothstep(2.0, 10.0, dist);
+  vAlpha = aAlpha * edgeFade;
+  gl_Position = uViewProj * vec4(aPos, 1.0);
+  float w = max(1e-4, 1.0 + gl_Position.w);
+  gl_Position.z = (log2(w) * uFcoef - 1.0) * gl_Position.w;
+}`;
+
+const DUST_FS = `#version 300 es
+precision highp float;
+in float vAlpha;
+uniform vec4 uColor;
+out vec4 fragColor;
+void main() {
+  fragColor = vec4(uColor.rgb, uColor.a * vAlpha);
+}`;
+
+const skyProg = createProgram(SKY_VS, SKY_FS);
+const uberProg = createProgram(UBER_VS, UBER_FS);
+const lineProg = createProgram(LINE_VS, LINE_FS);
+const gateProg = createProgram(GATE_VS, GATE_FS);
+const astProg  = createProgram(AST_VS, AST_FS);
+const pStarProg = createProgram(PSTAR_VS, PSTAR_FS);
+const dustProg = createProgram(DUST_VS, DUST_FS);
+
+const skyLoc = {
+  uCamRight: gl.getUniformLocation(skyProg, "uCamRight"),
+  uCamUp: gl.getUniformLocation(skyProg, "uCamUp"),
+  uCamForward: gl.getUniformLocation(skyProg, "uCamForward"),
+  uAspect: gl.getUniformLocation(skyProg, "uAspect"),
+  uTanHalfFov: gl.getUniformLocation(skyProg, "uTanHalfFov"),
+  uSunDir: gl.getUniformLocation(skyProg, "uSunDir"),
+  uWarpFactor: gl.getUniformLocation(skyProg, "uWarpFactor"),
+  uVelDir: gl.getUniformLocation(skyProg, "uVelDir")
+};
+
+const uberLoc = {
+  uViewProj: gl.getUniformLocation(uberProg, "uViewProj"),
+  uBodyPos: gl.getUniformLocation(uberProg, "uBodyPos"),
+  uBodyRadius: gl.getUniformLocation(uberProg, "uBodyRadius"),
+  uAxialTilt: gl.getUniformLocation(uberProg, "uAxialTilt"),
+  uRotAngle: gl.getUniformLocation(uberProg, "uRotAngle"),
+  uPassScale: gl.getUniformLocation(uberProg, "uPassScale"),
+  uFcoef: gl.getUniformLocation(uberProg, "uFcoef"),
+  uBodyType: gl.getUniformLocation(uberProg, "uBodyType"),
+  uRenderPass: gl.getUniformLocation(uberProg, "uRenderPass"),
+  uSunPos: gl.getUniformLocation(uberProg, "uSunPos"),
+  uBaseColor: gl.getUniformLocation(uberProg, "uBaseColor"),
+  uSecColor: gl.getUniformLocation(uberProg, "uSecColor"),
+  uAtmoColor: gl.getUniformLocation(uberProg, "uAtmoColor"),
+  uAtmoStrength: gl.getUniformLocation(uberProg, "uAtmoStrength"),
+  uNoiseScale: gl.getUniformLocation(uberProg, "uNoiseScale"),
+  uCloudDensity: gl.getUniformLocation(uberProg, "uCloudDensity"),
+  uRingInner: gl.getUniformLocation(uberProg, "uRingInner"),
+  uRingOuter: gl.getUniformLocation(uberProg, "uRingOuter"),
+  uTime: gl.getUniformLocation(uberProg, "uTime"),
+  uRingNormal: gl.getUniformLocation(uberProg, "uRingNormal")
+};
+
+const lineLoc = {
+  uViewProj: gl.getUniformLocation(lineProg, "uViewProj"),
+  uOffset: gl.getUniformLocation(lineProg, "uOffset"),
+  uScale: gl.getUniformLocation(lineProg, "uScale"),
+  uTilt: gl.getUniformLocation(lineProg, "uTilt"),
+  uSpin: gl.getUniformLocation(lineProg, "uSpin"),
+  uFcoef: gl.getUniformLocation(lineProg, "uFcoef"),
+  uColor: gl.getUniformLocation(lineProg, "uColor")
+};
+
+const gateLoc = {
+  uViewProj: gl.getUniformLocation(gateProg, "uViewProj"),
+  uOffset: gl.getUniformLocation(gateProg, "uOffset"),
+  uScale: gl.getUniformLocation(gateProg, "uScale"),
+  uTilt: gl.getUniformLocation(gateProg, "uTilt"),
+  uSpin: gl.getUniformLocation(gateProg, "uSpin"),
+  uFcoef: gl.getUniformLocation(gateProg, "uFcoef"),
+  uColor: gl.getUniformLocation(gateProg, "uColor"),
+  uTime: gl.getUniformLocation(gateProg, "uTime")
+};
+
+const astLoc = {
+  uViewProj: gl.getUniformLocation(astProg, "uViewProj"),
+  uShipPos: gl.getUniformLocation(astProg, "uShipPos"),
+  uSunPos: gl.getUniformLocation(astProg, "uSunPos"),
+  uTime: gl.getUniformLocation(astProg, "uTime"),
+  uFcoef: gl.getUniformLocation(astProg, "uFcoef")
+};
+
+const pStarLoc = {
+  uViewProj: gl.getUniformLocation(pStarProg, "uViewProj"),
+  uFcoef: gl.getUniformLocation(pStarProg, "uFcoef"),
+  uDpr: gl.getUniformLocation(pStarProg, "uDpr")
+};
+
+const dustLoc = {
+  uViewProj: gl.getUniformLocation(dustProg, "uViewProj"),
+  uFcoef: gl.getUniformLocation(dustProg, "uFcoef"),
+  uColor: gl.getUniformLocation(dustProg, "uColor")
+};
+
+/* ============================================================================
+   5. ONCE-AT-STARTUP PROCEDURAL GEOMETRY & INSTANCE BUFFERS
+   ============================================================================ */
+// 5a. Fullscreen Sky Quad
+const quadVAO = gl.createVertexArray();
+gl.bindVertexArray(quadVAO);
+const quadVBO = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, quadVBO);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+// 5b. Unit Sphere Geometry (Uber-Shader)
+const sphereVAO = gl.createVertexArray();
+gl.bindVertexArray(sphereVAO);
+let sphereIndexCount = 0;
+{
+  const latBands = 56, lonBands = 56;
+  const verts = new Float32Array((latBands + 1) * (lonBands + 1) * 3);
+  const indices = new Uint16Array(latBands * lonBands * 6);
+  let vPtr = 0;
+  for (let lat = 0; lat <= latBands; lat++) {
+    const theta = (lat * Math.PI) / latBands;
+    const sinTheta = Math.sin(theta), cosTheta = Math.cos(theta);
+    for (let lon = 0; lon <= lonBands; lon++) {
+      const phi = (lon * 2 * Math.PI) / lonBands;
+      verts[vPtr++] = Math.cos(phi) * sinTheta;
+      verts[vPtr++] = cosTheta;
+      verts[vPtr++] = Math.sin(phi) * sinTheta;
+    }
+  }
+  let iPtr = 0;
+  for (let lat = 0; lat < latBands; lat++) {
+    for (let lon = 0; lon < lonBands; lon++) {
+      const first = lat * (lonBands + 1) + lon;
+      const second = first + lonBands + 1;
+      indices[iPtr++] = first; indices[iPtr++] = second; indices[iPtr++] = first + 1;
+      indices[iPtr++] = second; indices[iPtr++] = second + 1; indices[iPtr++] = first + 1;
+    }
+  }
+  sphereIndexCount = indices.length;
+  const vbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+  const ibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+}
+
+// 5c. Unit Circle Line Loop (Planetary Orbits) & Bold 3D Torus Checkpoint Gate Mesh
+const ORBIT_SEGMENTS = 128;
+const ringVAO = gl.createVertexArray();
+gl.bindVertexArray(ringVAO);
+{
+  const ringVerts = new Float32Array(ORBIT_SEGMENTS * 3);
+  for (let i = 0; i < ORBIT_SEGMENTS; i++) {
+    const a = (i / ORBIT_SEGMENTS) * Math.PI * 2.0;
+    ringVerts[i * 3 + 0] = Math.cos(a);
+    ringVerts[i * 3 + 1] = 0.0;
+    ringVerts[i * 3 + 2] = Math.sin(a);
+  }
+  const rvbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, rvbo);
+  gl.bufferData(gl.ARRAY_BUFFER, ringVerts, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+}
+
+const gateVAO = gl.createVertexArray();
+gl.bindVertexArray(gateVAO);
+let gateIndexCount = 0;
+{
+  const majSeg = 48, minSeg = 12;
+  const tubeR = 0.045;
+  const verts = new Float32Array((majSeg + 1) * (minSeg + 1) * 6);
+  const indices = new Uint16Array(majSeg * minSeg * 6);
+  let vp = 0;
+  for (let i = 0; i <= majSeg; i++) {
+    const u = (i / majSeg) * Math.PI * 2.0;
+    const cu = Math.cos(u), su = Math.sin(u);
+    for (let j = 0; j <= minSeg; j++) {
+      const v = (j / minSeg) * Math.PI * 2.0;
+      const cv = Math.cos(v), sv = Math.sin(v);
+      const r = 1.0 + tubeR * cv;
+      verts[vp++] = r * cu;
+      verts[vp++] = tubeR * sv;
+      verts[vp++] = r * su;
+      verts[vp++] = cv * cu;
+      verts[vp++] = sv;
+      verts[vp++] = cv * su;
+    }
+  }
+  let ip = 0;
+  for (let i = 0; i < majSeg; i++) {
+    for (let j = 0; j < minSeg; j++) {
+      const a = i * (minSeg + 1) + j;
+      const b = a + minSeg + 1;
+      indices[ip++] = a; indices[ip++] = b; indices[ip++] = a + 1;
+      indices[ip++] = b; indices[ip++] = b + 1; indices[ip++] = a + 1;
+    }
+  }
+  gateIndexCount = indices.length;
+  const gvbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, gvbo);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 24, 0);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 24, 12);
+
+  const gibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+}
+
+// 5d. Instanced Faceted Asteroid Belt (Between Mars @ 3680 and Jupiter @ 5380)
+const astVAO = gl.createVertexArray();
+gl.bindVertexArray(astVAO);
+let astIndexCount = 0;
+{
+  const latB = 6, lonB = 8;
+  const verts = new Float32Array((latB + 1) * (lonB + 1) * 3);
+  const indices = new Uint16Array(latB * lonB * 6);
+  let vp = 0;
+  for (let lat = 0; lat <= latB; lat++) {
+    const th = (lat * Math.PI) / latB;
+    const s = Math.sin(th), c = Math.cos(th);
+    for (let lon = 0; lon <= lonB; lon++) {
+      const ph = (lon * 2 * Math.PI) / lonB;
+      verts[vp++] = Math.cos(ph) * s;
+      verts[vp++] = c;
+      verts[vp++] = Math.sin(ph) * s;
+    }
+  }
+  let ip = 0;
+  for (let lat = 0; lat < latB; lat++) {
+    for (let lon = 0; lon < lonB; lon++) {
+      const a = lat * (lonB + 1) + lon;
+      const b = a + lonB + 1;
+      indices[ip++] = a; indices[ip++] = b; indices[ip++] = a + 1;
+      indices[ip++] = b; indices[ip++] = b + 1; indices[ip++] = a + 1;
+    }
+  }
+  astIndexCount = indices.length;
+
+  const avbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, avbo);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+  const aibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, aibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+  const instOrbit = new Float32Array(ASTEROID_COUNT * 4);
+  const instProps = new Float32Array(ASTEROID_COUNT * 4);
+  for (let i = 0; i < ASTEROID_COUNT; i++) {
+    instOrbit[i * 4 + 0] = 12200.0 + Math.random() * 3000.0; // Belt band between Mars & Jupiter
+    instOrbit[i * 4 + 1] = Math.random() * Math.PI * 2.0;
+    instOrbit[i * 4 + 2] = 0.002 + Math.random() * 0.003;
+    instOrbit[i * 4 + 3] = (Math.random() - 0.5) * 420.0;
+
+    instProps[i * 4 + 0] = 7.0 + Math.pow(Math.random(), 2.2) * 20.0; // Scale
+    instProps[i * 4 + 1] = (Math.random() - 0.5) * 1.4;
+    instProps[i * 4 + 2] = Math.random();
+    instProps[i * 4 + 3] = Math.random();
+  }
+
+  const ioBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, ioBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, instOrbit, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(1);
+  gl.vertexAttribPointer(1, 4, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(1, 1);
+
+  const ipBuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, ipBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, instProps, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(2);
+  gl.vertexAttribPointer(2, 4, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribDivisor(2, 1);
+}
+
+// 5e. 3D Parallax Moving Stars & Velocity Streaks Buffers
+const pStarVAO = gl.createVertexArray();
+gl.bindVertexArray(pStarVAO);
+const pStarVBO = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, pStarVBO);
+gl.bufferData(gl.ARRAY_BUFFER, pStarVerts32.byteLength, gl.DYNAMIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 16, 0);
+gl.enableVertexAttribArray(1);
+gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 16, 12);
+
+const dustVAO = gl.createVertexArray();
+gl.bindVertexArray(dustVAO);
+const dustVBO = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, dustVBO);
+gl.bufferData(gl.ARRAY_BUFFER, dustVerts32.byteLength, gl.DYNAMIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 16, 0);
+gl.enableVertexAttribArray(1);
+gl.vertexAttribPointer(1, 1, gl.FLOAT, false, 16, 12);
+
+gl.bindVertexArray(null);
+
+/* ============================================================================
+   6. ORBITAL STATE, SPAWN, AUTOPILOT, SCANNER & FIELD LOG UI
+   ============================================================================ */
+let targetIndex = 3; // Earth
+let warpActive = false;
+let orbitActive = false;
+let scanHold = false;
+let ringsEnabled = true;
+let simTime = 0.0;
+let discoveredCount = 0;
+let ringsClearedCount = 0;
+let toastText = "";
+let toastTimer = 0.0;
+
+function getGateRadius(b) {
+  return Math.max(9.0, Math.min(28.0, b.radius * 0.22));
+}
+
+function updateCelestialOrbits(t) {
+  for (let i = 0; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const idx = i * 3;
+    const angle = b.orbitPhase + t * b.orbitSpeed;
+    if (b.parentIdx < 0) {
+      bodyPos64[idx + 0] = 0.0;
+      bodyPos64[idx + 1] = 0.0;
+      bodyPos64[idx + 2] = 0.0;
+    } else {
+      const pIdx = b.parentIdx * 3;
+      const incl = b.isPlanetOrbit ? 0.025 : 0.05;
+      bodyPos64[idx + 0] = bodyPos64[pIdx + 0] + Math.cos(angle) * b.orbitRadius;
+      bodyPos64[idx + 1] = bodyPos64[pIdx + 1] + Math.sin(angle + b.orbitPhase * 2.0) * (b.orbitRadius * incl);
+      bodyPos64[idx + 2] = bodyPos64[pIdx + 2] + Math.sin(angle) * b.orbitRadius;
+    }
+
+    // Place orbital checkpoint gate outside planet/moon (proportionally sized smaller than body)
+    const gateDist = b.radius * 1.55 + 24.0;
+    const gAng = angle + 0.35;
+    gatePos64[idx + 0] = bodyPos64[idx + 0] + Math.cos(gAng) * gateDist;
+    gatePos64[idx + 1] = bodyPos64[idx + 1] + Math.sin(gAng * 1.5) * (b.radius * 0.18);
+    gatePos64[idx + 2] = bodyPos64[idx + 2] + Math.sin(gAng) * gateDist;
+  }
+}
+updateCelestialOrbits(0);
+
+// Spawn in dramatic low Earth orbit facing Earth, Luna, and the Sun!
+{
+  const eIdx = 3 * 3;
+  shipPos64[0] = bodyPos64[eIdx + 0] + 150.0;
+  shipPos64[1] = bodyPos64[eIdx + 1] + 50.0;
+  shipPos64[2] = bodyPos64[eIdx + 2] + 175.0;
+  lookAtQuat(shipQuat, shipPos64[0], shipPos64[1], shipPos64[2],
+             bodyPos64[eIdx + 0] - 25.0, bodyPos64[eIdx + 1] - 8.0, bodyPos64[eIdx + 2] - 15.0);
+}
+
+// Build Field Log & Mission UI
+const logDrawer = document.getElementById("logDrawer");
+const logListEl = document.getElementById("logList");
+const logCountText = document.getElementById("logCountText");
+const sysStatusText = document.getElementById("sysStatusText");
+const missionBox = document.getElementById("missionBox");
+const missionCountText = document.getElementById("missionCountText");
+const missionDescText = document.getElementById("missionDescText");
+const missionBarFill = document.getElementById("missionBarFill");
+const victoryModal = document.getElementById("victoryModal");
+
+function updateMissionUI() {
+  const allCleared = ringsClearedCount >= BODY_COUNT;
+  if (ringsEnabled) {
+    sysStatusText.textContent = `SOL SYSTEM · ${ringsClearedCount} / ${BODY_COUNT} RINGS`;
+  } else {
+    sysStatusText.textContent = `SOL SYSTEM · FREE FLIGHT (${discoveredCount}/${BODY_COUNT} SURVEYED)`;
+  }
+
+  document.getElementById("targetChipName").textContent = ALL_BODIES[targetIndex].name.toUpperCase();
+
+  missionBox.classList.toggle("hidden", !ringsEnabled);
+  missionCountText.textContent = `${ringsClearedCount} / ${BODY_COUNT}`;
+  missionCountText.classList.toggle("done", allCleared);
+  missionBarFill.style.width = `${(ringsClearedCount / BODY_COUNT) * 100}%`;
+  missionBarFill.classList.toggle("done", allCleared);
+  missionDescText.textContent = allCleared
+    ? "All 13 checkpoint rings cleared! You won the ring challenge."
+    : "Fly through all 13 orbital checkpoint rings across the Solar System to win!";
+
+  const ringsBtn = document.getElementById("btnRingsToggle");
+  ringsBtn.textContent = ringsEnabled ? "RINGS: ON [G]" : "RINGS: OFF [G]";
+  ringsBtn.classList.toggle("active", ringsEnabled);
+}
+
+function renderFieldLogDrawer() {
+  logCountText.textContent = `${discoveredCount} / ${BODY_COUNT} SURVEYED · ${ringsClearedCount} RINGS`;
+  updateMissionUI();
+
+  logListEl.innerHTML = "";
+  for (let i = 0; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "log-item" + (i === targetIndex ? " selected" : "");
+    const statusLabel = b.ringCleared
+      ? "● RING CLEARED"
+      : b.discovered
+        ? "● SURVEYED"
+        : "○ UNSCANNED";
+    btn.innerHTML =
+      `<div class="log-item-head">` +
+        `<span class="log-name">${b.name}</span>` +
+        `<span class="log-status ${(b.discovered || b.ringCleared) ? "surveyed" : ""}">${statusLabel}</span>` +
+      `</div>` +
+      `<div class="log-meta">${b.subtitle} · ${b.stats}</div>` +
+      `<div class="log-fact">${b.discovered ? b.fact : "Fly close to scan or pass through this body's checkpoint ring."}</div>`;
+    btn.addEventListener("click", () => {
+      targetIndex = i;
+      renderFieldLogDrawer();
+    });
+    logListEl.appendChild(btn);
+  }
+}
+renderFieldLogDrawer();
+
+function completeDiscovery(idx) {
+  const b = ALL_BODIES[idx];
+  if (b.discovered) return;
+  b.discovered = true;
+  b.scanProgress = 1.0;
+  discoveredCount++;
+  toastText = `DISCOVERY SCAN COMPLETE · ${b.name.toUpperCase()}`;
+  toastTimer = 3.2;
+  playDiscoveryChime();
+  renderFieldLogDrawer();
+}
+
+function completeRing(idx) {
+  const b = ALL_BODIES[idx];
+  if (b.ringCleared) return;
+  b.ringCleared = true;
+  ringsClearedCount++;
+  if (!b.discovered) {
+    b.discovered = true;
+    b.scanProgress = 1.0;
+    discoveredCount++;
+  }
+  toastText = `RING ${ringsClearedCount}/${BODY_COUNT} CLEARED · ${b.name.toUpperCase()}`;
+  toastTimer = 3.6;
+  playDiscoveryChime();
+  renderFieldLogDrawer();
+
+  if (ringsClearedCount >= BODY_COUNT) {
+    victoryModal.classList.add("open");
+  }
+}
+
+function setRingsEnabled(enabled) {
+  ringsEnabled = enabled;
+  if (!enabled) victoryModal.classList.remove("open");
+  updateMissionUI();
+}
+
+function resetRingChallenge() {
+  ringsClearedCount = 0;
+  for (let i = 0; i < BODY_COUNT; i++) {
+    ALL_BODIES[i].ringCleared = false;
+  }
+  ringsEnabled = true;
+  victoryModal.classList.remove("open");
+  renderFieldLogDrawer();
+}
+
+/* ============================================================================
+   7. DUAL DESKTOP & MOBILE TOUCH INPUTS
+   ============================================================================ */
+const keys = Object.create(null);
+let mousePitchDelta = 0.0;
+let mouseYawDelta = 0.0;
+let isMouseDragging = false;
+let lastMouseX = 0, lastMouseY = 0;
+
+let joyX = 0.0, joyY = 0.0;
+let joyTouchId = null, lookTouchId = null;
+let lastLookX = 0, lastLookY = 0;
+let hudHidden = false;
+const touchHold = { rollL: false, rollR: false, up: false, down: false, boost: false };
+
+function setHudHidden(hidden) {
+  hudHidden = hidden;
+  document.body.classList.toggle("hud-hidden", hudHidden);
+  const btn = document.getElementById("btnHudToggle");
+  if (btn) btn.classList.toggle("active", hudHidden);
+}
+
+function setTouchMode(enabled) {
+  document.body.classList.toggle("touch-enabled", enabled);
+  document.getElementById("btnTouchToggle").classList.toggle("active", enabled);
+}
+if ("ontouchstart" in window || navigator.maxTouchPoints > 0) setTouchMode(true);
+
+function cycleTarget(dir) {
+  targetIndex = (targetIndex + dir + BODY_COUNT) % BODY_COUNT;
+  updateMissionUI();
+  if (logDrawer.classList.contains("open")) renderFieldLogDrawer();
+}
+
+function setWarp(state) {
+  warpActive = state;
+  if (warpActive) setOrbit(false);
+  document.getElementById("btnWarpTop").classList.toggle("active", warpActive);
+  if (warpActive) playTone(160, 480, 0.35, 0.07, "sawtooth");
+}
+
+function setOrbit(state) {
+  orbitActive = state;
+  if (orbitActive && warpActive) setWarp(false);
+  document.getElementById("btnOrbitTop").classList.toggle("active", orbitActive);
+  if (orbitActive) playTone(320, 440, 0.18, 0.05, "sine");
+}
+
+window.addEventListener("keydown", (e) => {
+  keys[e.code] = true;
+  if (!audioInitialized) initAudio();
+  if (e.code === "Tab") {
+    e.preventDefault();
+    cycleTarget(e.shiftKey ? -1 : 1);
+  } else if (e.code === "KeyF") {
+    e.preventDefault();
+    setWarp(!warpActive);
+  } else if (e.code === "KeyO") {
+    e.preventDefault();
+    setOrbit(!orbitActive);
+  } else if (e.code === "KeyG") {
+    e.preventDefault();
+    setRingsEnabled(!ringsEnabled);
+  } else if (e.code === "KeyH") {
+    e.preventDefault();
+    setHudHidden(!hudHidden);
+  } else if (e.code === "KeyL") {
+    e.preventDefault();
+    logDrawer.classList.toggle("open");
+    document.getElementById("btnLogToggle").classList.toggle("active", logDrawer.classList.contains("open"));
+    if (logDrawer.classList.contains("open")) renderFieldLogDrawer();
+  }
+});
+
+window.addEventListener("keyup", (e) => {
+  keys[e.code] = false;
+});
+
+glCanvas.addEventListener("mousedown", (e) => {
+  if (!audioInitialized) initAudio();
+  if (e.button !== 0) return;
+  isMouseDragging = true;
+  lastMouseX = e.clientX;
+  lastMouseY = e.clientY;
+  if (glCanvas.requestPointerLock) {
+    try { glCanvas.requestPointerLock(); } catch (_) {}
+  }
+});
+window.addEventListener("mouseup", () => { isMouseDragging = false; });
+window.addEventListener("mousemove", (e) => {
+  if (document.pointerLockElement === glCanvas) {
+    mouseYawDelta -= e.movementX * 0.0012;
+    mousePitchDelta -= e.movementY * 0.0012;
+  } else if (isMouseDragging) {
+    const dx = e.clientX - lastMouseX;
+    const dy = e.clientY - lastMouseY;
+    lastMouseX = e.clientX;
+    lastMouseY = e.clientY;
+    mouseYawDelta -= dx * 0.0018;
+    mousePitchDelta -= dy * 0.0018;
+  }
+});
+
+document.getElementById("btnPrevTarget").addEventListener("click", () => cycleTarget(-1));
+document.getElementById("btnNextTarget").addEventListener("click", () => cycleTarget(1));
+document.getElementById("btnNextTargetArrow").addEventListener("click", () => cycleTarget(1));
+document.getElementById("btnWarpTop").addEventListener("click", () => setWarp(!warpActive));
+document.getElementById("btnOrbitTop").addEventListener("click", () => setOrbit(!orbitActive));
+document.getElementById("btnRingsToggle").addEventListener("click", () => setRingsEnabled(!ringsEnabled));
+document.getElementById("btnHideRingsBox").addEventListener("click", () => setRingsEnabled(false));
+document.getElementById("btnResetRings").addEventListener("click", resetRingChallenge);
+document.getElementById("btnVictoryFreeFlight").addEventListener("click", () => setRingsEnabled(false));
+document.getElementById("btnAudioToggle").addEventListener("click", toggleAudio);
+document.getElementById("btnHudToggle").addEventListener("click", () => setHudHidden(true));
+document.getElementById("btnShowHud").addEventListener("click", () => setHudHidden(false));
+document.getElementById("btnLogToggle").addEventListener("click", () => {
+  logDrawer.classList.toggle("open");
+  document.getElementById("btnLogToggle").classList.toggle("active", logDrawer.classList.contains("open"));
+  if (logDrawer.classList.contains("open")) renderFieldLogDrawer();
+});
+document.getElementById("btnCloseLog").addEventListener("click", () => {
+  logDrawer.classList.remove("open");
+  document.getElementById("btnLogToggle").classList.remove("active");
+});
+document.getElementById("btnTouchToggle").addEventListener("click", () => {
+  setTouchMode(!document.body.classList.contains("touch-enabled"));
+});
+document.getElementById("promptStrip").addEventListener("click", () => {
+  if (!audioInitialized) initAudio();
+  if (glCanvas.requestPointerLock) {
+    try { glCanvas.requestPointerLock(); } catch (_) {}
+  }
+});
+
+function bindHoldButton(id, prop, callback) {
+  const el = document.getElementById(id);
+  const start = (e) => {
+    e.preventDefault();
+    if (!audioInitialized) initAudio();
+    if (prop) touchHold[prop] = true;
+    if (callback) callback(true);
+    el.classList.add("active");
+  };
+  const end = (e) => {
+    e.preventDefault();
+    if (prop) touchHold[prop] = false;
+    if (callback) callback(false);
+    el.classList.remove("active");
+  };
+  el.addEventListener("touchstart", start, { passive: false });
+  el.addEventListener("touchend", end, { passive: false });
+  el.addEventListener("touchcancel", end, { passive: false });
+  el.addEventListener("mousedown", start);
+  el.addEventListener("mouseup", end);
+  el.addEventListener("mouseleave", end);
+}
+bindHoldButton("btnRollL", "rollL");
+bindHoldButton("btnRollR", "rollR");
+bindHoldButton("btnUp", "up");
+bindHoldButton("btnDown", "down");
+bindHoldButton("btnScanTop", null, (v) => { scanHold = v; });
+
+// Large Boost Pad: Hold to Boost + Drag thumb on pad to Steer simultaneously
+const btnBoostEl = document.getElementById("btnBoost");
+let boostTouchId = null;
+let lastBoostX = 0, lastBoostY = 0;
+btnBoostEl.addEventListener("touchstart", (e) => {
+  e.preventDefault();
+  setTouchMode(true);
+  if (!audioInitialized) initAudio();
+  const t = e.changedTouches[0];
+  boostTouchId = t.identifier;
+  lastBoostX = t.clientX;
+  lastBoostY = t.clientY;
+  touchHold.boost = true;
+  btnBoostEl.classList.add("active");
+}, { passive: false });
+btnBoostEl.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  const touchSens = 0.00135;
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const t = e.changedTouches[i];
+    if (t.identifier === boostTouchId) {
+      const dx = Math.max(-42, Math.min(42, t.clientX - lastBoostX));
+      const dy = Math.max(-42, Math.min(42, t.clientY - lastBoostY));
+      mouseYawDelta -= dx * touchSens;
+      mousePitchDelta -= dy * touchSens;
+      lastBoostX = t.clientX;
+      lastBoostY = t.clientY;
+    }
+  }
+}, { passive: false });
+function endBoostTouch(e) {
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    if (e.changedTouches[i].identifier === boostTouchId) {
+      boostTouchId = null;
+      touchHold.boost = false;
+      btnBoostEl.classList.remove("active");
+    }
+  }
+}
+btnBoostEl.addEventListener("touchend", endBoostTouch);
+btnBoostEl.addEventListener("touchcancel", endBoostTouch);
+btnBoostEl.addEventListener("mousedown", (e) => {
+  e.preventDefault();
+  if (!audioInitialized) initAudio();
+  touchHold.boost = true;
+  btnBoostEl.classList.add("active");
+});
+function endBoostMouse() {
+  touchHold.boost = false;
+  btnBoostEl.classList.remove("active");
+}
+btnBoostEl.addEventListener("mouseup", endBoostMouse);
+btnBoostEl.addEventListener("mouseleave", endBoostMouse);
+
+// Virtual Left Joystick
+const joyZone = document.getElementById("joyZone");
+const joyKnob = document.getElementById("joyKnob");
+function updateJoystick(clientX, clientY) {
+  const rect = joyZone.getBoundingClientRect();
+  const cx = rect.left + rect.width * 0.5;
+  const cy = rect.top + rect.height * 0.5;
+  const maxR = rect.width * 0.38;
+  let dx = clientX - cx, dy = clientY - cy;
+  const dist = Math.hypot(dx, dy);
+  if (dist > maxR) { dx = (dx / dist) * maxR; dy = (dy / dist) * maxR; }
+  joyX = dx / maxR;
+  joyY = -dy / maxR;
+  joyKnob.style.transform = `translate3d(${dx.toFixed(1)}px, ${dy.toFixed(1)}px, 0px)`;
+}
+function resetJoystick() {
+  joyTouchId = null; joyX = 0.0; joyY = 0.0;
+  joyKnob.style.transform = "translate3d(0px, 0px, 0px)";
+}
+joyZone.addEventListener("touchstart", (e) => {
+  e.preventDefault(); setTouchMode(true);
+  if (!audioInitialized) initAudio();
+  const t = e.changedTouches[0]; joyTouchId = t.identifier;
+  updateJoystick(t.clientX, t.clientY);
+}, { passive: false });
+joyZone.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    if (e.changedTouches[i].identifier === joyTouchId) updateJoystick(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+  }
+}, { passive: false });
+joyZone.addEventListener("touchend", (e) => {
+  for (let i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === joyTouchId) resetJoystick();
+});
+joyZone.addEventListener("touchcancel", resetJoystick);
+
+// Right Touch Look Area
+const lookZone = document.getElementById("lookZone");
+lookZone.addEventListener("touchstart", (e) => {
+  e.preventDefault(); setTouchMode(true);
+  const t = e.changedTouches[0]; lookTouchId = t.identifier;
+  lastLookX = t.clientX; lastLookY = t.clientY;
+}, { passive: false });
+lookZone.addEventListener("touchmove", (e) => {
+  e.preventDefault();
+  const touchSens = 0.00135; // Smooth, weighted spaceship steering on mobile
+  for (let i = 0; i < e.changedTouches.length; i++) {
+    const t = e.changedTouches[i];
+    if (t.identifier === lookTouchId) {
+      const dx = Math.max(-42, Math.min(42, t.clientX - lastLookX));
+      const dy = Math.max(-42, Math.min(42, t.clientY - lastLookY));
+      mouseYawDelta -= dx * touchSens;
+      mousePitchDelta -= dy * touchSens;
+      lastLookX = t.clientX; lastLookY = t.clientY;
+    }
+  }
+}, { passive: false });
+lookZone.addEventListener("touchend", (e) => {
+  for (let i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === lookTouchId) lookTouchId = null;
+});
+
+/* ============================================================================
+   8. SAFE DPR RESIZE
+   ============================================================================ */
+let viewWidth = 1, viewHeight = 1, dpr = 1;
+function handleResize() {
+  dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+  viewWidth = Math.max(1, window.innerWidth);
+  viewHeight = Math.max(1, window.innerHeight);
+  glCanvas.width = Math.floor(viewWidth * dpr);
+  glCanvas.height = Math.floor(viewHeight * dpr);
+  hudCanvas.width = Math.floor(viewWidth * dpr);
+  hudCanvas.height = Math.floor(viewHeight * dpr);
+  gl.viewport(0, 0, glCanvas.width, glCanvas.height);
+}
+window.addEventListener("resize", handleResize);
+window.addEventListener("orientationchange", handleResize);
+handleResize();
+
+/* ============================================================================
+   9. 6DoF PHYSICS, SCENIC ORBIT, SUPERCRUISE & DISCOVERY SCANNER
+   ============================================================================ */
+let lastTime = performance.now();
+let currentSpeed = 0.0;
+let pitchRate = 0.0, yawRate = 0.0, rollRate = 0.0;
+let warpVisualFactor = 0.0;
+let orbitPhaseAngle = 0.0;
+
+const FAR_PLANE = 280000.0;
+const FCOEF = 2.0 / Math.log2(FAR_PLANE + 1.0);
+
+function stepPhysics(dt) {
+  updateBasisVectorsFromQuat(shipQuat);
+
+  const keyRoll = (keys["KeyE"] || touchHold.rollR ? 1.0 : 0.0) - (keys["KeyQ"] || touchHold.rollL ? 1.0 : 0.0);
+  const keyPitch = (keys["ArrowUp"] ? 1.0 : 0.0) - (keys["ArrowDown"] ? 1.0 : 0.0);
+  const keyYaw = (keys["ArrowLeft"] ? 1.0 : 0.0) - (keys["ArrowRight"] ? 1.0 : 0.0);
+
+  pitchRate = Math.max(-1.6, Math.min(1.6, pitchRate * Math.exp(-7.2 * dt) + mousePitchDelta * 6.8 + keyPitch * 2.1 * dt));
+  yawRate   = Math.max(-1.6, Math.min(1.6, yawRate   * Math.exp(-7.2 * dt) + mouseYawDelta   * 6.8 + keyYaw   * 2.1 * dt));
+  rollRate  = Math.max(-1.6, Math.min(1.6, rollRate  * Math.exp(-6.2 * dt) + keyRoll * 2.1 * dt));
+  mousePitchDelta = 0.0;
+  mouseYawDelta = 0.0;
+
+  if (Math.abs(pitchRate) > 1e-6) {
+    quatFromAxisAngle(tempQuatA, vecRight[0], vecRight[1], vecRight[2], pitchRate * dt * 2.1);
+    quatMultiply(tempQuatB, tempQuatA, shipQuat);
+    shipQuat.set(tempQuatB);
+  }
+  if (Math.abs(yawRate) > 1e-6) {
+    quatFromAxisAngle(tempQuatA, vecUp[0], vecUp[1], vecUp[2], yawRate * dt * 2.1);
+    quatMultiply(tempQuatB, tempQuatA, shipQuat);
+    shipQuat.set(tempQuatB);
+  }
+  if (Math.abs(rollRate) > 1e-6) {
+    quatFromAxisAngle(tempQuatA, vecForward[0], vecForward[1], vecForward[2], rollRate * dt * 2.0);
+    quatMultiply(tempQuatB, tempQuatA, shipQuat);
+    shipQuat.set(tempQuatB);
+  }
+  quatNormalize(shipQuat);
+  updateBasisVectorsFromQuat(shipQuat);
+
+  const thrustFwd = ((keys["KeyW"] ? 1.0 : 0.0) - (keys["KeyS"] ? 1.0 : 0.0)) + joyY;
+  const strafeRight = ((keys["KeyD"] ? 1.0 : 0.0) - (keys["KeyA"] ? 1.0 : 0.0)) + joyX;
+  const strafeUp = ((keys["KeyR"] || keys["Space"] || touchHold.up) ? 1.0 : 0.0) -
+                   ((keys["KeyC"] || keys["ControlLeft"] || touchHold.down) ? 1.0 : 0.0);
+  const boosting = keys["ShiftLeft"] || keys["ShiftRight"] || touchHold.boost;
+  const effectiveFwd = (boosting && thrustFwd >= -0.05) ? Math.max(thrustFwd, 1.0) : thrustFwd;
+  const manualStrafeActive = Math.abs(strafeRight) > 0.08 || Math.abs(strafeUp) > 0.08;
+  const manualThrustActive = Math.abs(effectiveFwd) > 0.05 || manualStrafeActive;
+
+  if (orbitActive && manualThrustActive) {
+    setOrbit(false);
+  }
+
+  const tBody = ALL_BODIES[targetIndex];
+  const tIdx = targetIndex * 3;
+
+  if (warpActive) {
+    const dx = bodyPos64[tIdx + 0] - shipPos64[0];
+    const dy = bodyPos64[tIdx + 1] - shipPos64[1];
+    const dz = bodyPos64[tIdx + 2] - shipPos64[2];
+    const dist = Math.hypot(dx, dy, dz);
+    const standoff = tBody.radius * 2.4 + 55.0;
+    const remDist = Math.max(0.0, dist - standoff);
+
+    if (remDist < 14.0) {
+      setWarp(false);
+      setOrbit(true);
+    } else {
+      const dirX = dx / dist, dirY = dy / dist, dirZ = dz / dist;
+      const desiredSpeed = Math.min(1150.0, Math.max(55.0, remDist * 0.48));
+      const blend = 1.0 - Math.exp(-2.2 * dt);
+      shipVel64[0] += (dirX * desiredSpeed - shipVel64[0]) * blend;
+      shipVel64[1] += (dirY * desiredSpeed - shipVel64[1]) * blend;
+      shipVel64[2] += (dirZ * desiredSpeed - shipVel64[2]) * blend;
+    }
+  } else if (orbitActive) {
+    const rx = shipPos64[0] - bodyPos64[tIdx + 0];
+    const rz = shipPos64[2] - bodyPos64[tIdx + 2];
+    orbitPhaseAngle = Math.atan2(rz, rx) + dt * 0.16;
+    const orbitR = tBody.radius * 2.25 + 42.0;
+    const goalX = bodyPos64[tIdx + 0] + Math.cos(orbitPhaseAngle) * orbitR;
+    const goalY = bodyPos64[tIdx + 1] + Math.sin(orbitPhaseAngle * 2.0) * (tBody.radius * 0.25);
+    const goalZ = bodyPos64[tIdx + 2] + Math.sin(orbitPhaseAngle) * orbitR;
+
+    shipVel64[0] = (goalX - shipPos64[0]) * 1.8;
+    shipVel64[1] = (goalY - shipPos64[1]) * 1.8;
+    shipVel64[2] = (goalZ - shipPos64[2]) * 1.8;
+
+    if (!isMouseDragging && lookTouchId === null && boostTouchId === null && Math.abs(pitchRate) < 0.02 && Math.abs(yawRate) < 0.02) {
+      lookAtQuat(tempQuatA, shipPos64[0], shipPos64[1], shipPos64[2],
+                 bodyPos64[tIdx + 0], bodyPos64[tIdx + 1], bodyPos64[tIdx + 2]);
+      let dot = shipQuat[0]*tempQuatA[0] + shipQuat[1]*tempQuatA[1] + shipQuat[2]*tempQuatA[2] + shipQuat[3]*tempQuatA[3];
+      const sign = dot < 0 ? -1.0 : 1.0;
+      const sl = Math.min(1.0, dt * 1.6);
+      shipQuat[0] += (tempQuatA[0] * sign - shipQuat[0]) * sl;
+      shipQuat[1] += (tempQuatA[1] * sign - shipQuat[1]) * sl;
+      shipQuat[2] += (tempQuatA[2] * sign - shipQuat[2]) * sl;
+      shipQuat[3] += (tempQuatA[3] * sign - shipQuat[3]) * sl;
+      quatNormalize(shipQuat);
+      updateBasisVectorsFromQuat(shipQuat);
+    }
+  } else {
+    let maxAccel = boosting ? 240.0 : 68.0;
+    const surfDist = Math.max(12.0, Math.hypot(
+      bodyPos64[tIdx + 0] - shipPos64[0],
+      bodyPos64[tIdx + 1] - shipPos64[1],
+      bodyPos64[tIdx + 2] - shipPos64[2]
+    ) - tBody.radius);
+    const proxScale = Math.min(1.65, Math.max(0.38, surfDist / 260.0));
+    maxAccel *= proxScale;
+
+    const ax = (vecForward[0] * effectiveFwd + vecRight[0] * strafeRight + vecUp[0] * strafeUp) * maxAccel;
+    const ay = (vecForward[1] * effectiveFwd + vecRight[1] * strafeRight + vecUp[1] * strafeUp) * maxAccel;
+    const az = (vecForward[2] * effectiveFwd + vecRight[2] * strafeRight + vecUp[2] * strafeUp) * maxAccel;
+
+    const damp = Math.exp(-1.55 * dt);
+    shipVel64[0] = shipVel64[0] * damp + ax * dt;
+    shipVel64[1] = shipVel64[1] * damp + ay * dt;
+    shipVel64[2] = shipVel64[2] * damp + az * dt;
+
+    // Arcade spaceship vector assist: carve smoothly in nose direction when flying forward or boosting
+    if (!manualStrafeActive && (effectiveFwd > 0.05 || boosting)) {
+      const spd = Math.hypot(shipVel64[0], shipVel64[1], shipVel64[2]);
+      if (spd > 1.0) {
+        const fwdDot = shipVel64[0] * vecForward[0] + shipVel64[1] * vecForward[1] + shipVel64[2] * vecForward[2];
+        if (fwdDot > 0.0) {
+          const alignBlend = 1.0 - Math.exp(-(boosting ? 3.8 : 2.6) * dt);
+          shipVel64[0] += (vecForward[0] * spd - shipVel64[0]) * alignBlend;
+          shipVel64[1] += (vecForward[1] * spd - shipVel64[1]) * alignBlend;
+          shipVel64[2] += (vecForward[2] * spd - shipVel64[2]) * alignBlend;
+        }
+      }
+    }
+  }
+
+  shipPos64[0] += shipVel64[0] * dt;
+  shipPos64[1] += shipVel64[1] * dt;
+  shipPos64[2] += shipVel64[2] * dt;
+
+  // Collision Standoff + Discovery Scanner + Flyby Checkpoint Gates
+  const scanningKey = keys["KeyX"] || scanHold;
+  for (let i = 0; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const idx = i * 3;
+    const dx = shipPos64[0] - bodyPos64[idx + 0];
+    const dy = shipPos64[1] - bodyPos64[idx + 1];
+    const dz = shipPos64[2] - bodyPos64[idx + 2];
+    const d = Math.hypot(dx, dy, dz);
+    const minSep = b.radius * 1.13;
+    if (d < minSep && d > 1e-5) {
+      const push = minSep / d;
+      shipPos64[0] = bodyPos64[idx + 0] + dx * push;
+      shipPos64[1] = bodyPos64[idx + 1] + dy * push;
+      shipPos64[2] = bodyPos64[idx + 2] + dz * push;
+    }
+
+    if (ringsEnabled && !b.ringCleared) {
+      const gx = shipPos64[0] - gatePos64[idx + 0];
+      const gy = shipPos64[1] - gatePos64[idx + 1];
+      const gz = shipPos64[2] - gatePos64[idx + 2];
+      const gateDist = Math.hypot(gx, gy, gz);
+      const gateRadius = getGateRadius(b);
+      if (gateDist < gateRadius * 1.35) {
+        completeRing(i);
+      }
+    }
+
+    if (!b.discovered) {
+      const maxScanRange = scanningKey ? b.radius * 7.5 + 160.0 : b.radius * 3.8 + 90.0;
+      if (d < maxScanRange) {
+        const rate = scanningKey ? 0.72 : 0.28;
+        b.scanProgress = Math.min(1.0, b.scanProgress + dt * rate);
+        if (b.scanProgress >= 1.0) completeDiscovery(i);
+      }
+    }
+  }
+
+  // Update 3D Parallax Moving Stars (Zero Allocation)
+  const halfStarBox = PSTAR_BOX * 0.5;
+  for (let i = 0; i < PSTAR_COUNT; i++) {
+    const pIdx = i * 3;
+    let rx = pStarOrigin64[pIdx + 0] - shipPos64[0];
+    let ry = pStarOrigin64[pIdx + 1] - shipPos64[1];
+    let rz = pStarOrigin64[pIdx + 2] - shipPos64[2];
+
+    if (rx < -halfStarBox || rx > halfStarBox) {
+      pStarOrigin64[pIdx + 0] -= Math.round(rx / PSTAR_BOX) * PSTAR_BOX;
+      rx = pStarOrigin64[pIdx + 0] - shipPos64[0];
+    }
+    if (ry < -halfStarBox || ry > halfStarBox) {
+      pStarOrigin64[pIdx + 1] -= Math.round(ry / PSTAR_BOX) * PSTAR_BOX;
+      ry = pStarOrigin64[pIdx + 1] - shipPos64[1];
+    }
+    if (rz < -halfStarBox || rz > halfStarBox) {
+      pStarOrigin64[pIdx + 2] -= Math.round(rz / PSTAR_BOX) * PSTAR_BOX;
+      rz = pStarOrigin64[pIdx + 2] - shipPos64[2];
+    }
+
+    const vBase = i * 4;
+    pStarVerts32[vBase + 0] = rx;
+    pStarVerts32[vBase + 1] = ry;
+    pStarVerts32[vBase + 2] = rz;
+    pStarVerts32[vBase + 3] = pStarSize[i];
+  }
+
+  // Update 3D Wrap-Around Velocity Streak Dust Particles (Zero Allocation)
+  const halfBox = DUST_BOX * 0.5;
+  const streakLen = Math.min(28.0, currentSpeed * 0.065 + (warpActive ? 14.0 : 0.0));
+  let vxNorm = vecForward[0], vyNorm = vecForward[1], vzNorm = vecForward[2];
+  if (currentSpeed > 0.5) {
+    vxNorm = shipVel64[0] / currentSpeed;
+    vyNorm = shipVel64[1] / currentSpeed;
+    vzNorm = shipVel64[2] / currentSpeed;
+  }
+  for (let i = 0; i < DUST_COUNT; i++) {
+    const pIdx = i * 3;
+    let rx = dustOrigin64[pIdx + 0] - shipPos64[0];
+    let ry = dustOrigin64[pIdx + 1] - shipPos64[1];
+    let rz = dustOrigin64[pIdx + 2] - shipPos64[2];
+
+    if (rx < -halfBox || rx > halfBox) {
+      dustOrigin64[pIdx + 0] -= Math.round(rx / DUST_BOX) * DUST_BOX;
+      rx = dustOrigin64[pIdx + 0] - shipPos64[0];
+    }
+    if (ry < -halfBox || ry > halfBox) {
+      dustOrigin64[pIdx + 1] -= Math.round(ry / DUST_BOX) * DUST_BOX;
+      ry = dustOrigin64[pIdx + 1] - shipPos64[1];
+    }
+    if (rz < -halfBox || rz > halfBox) {
+      dustOrigin64[pIdx + 2] -= Math.round(rz / DUST_BOX) * DUST_BOX;
+      rz = dustOrigin64[pIdx + 2] - shipPos64[2];
+    }
+
+    const vBase = i * 8;
+    // Head vertex
+    dustVerts32[vBase + 0] = rx;
+    dustVerts32[vBase + 1] = ry;
+    dustVerts32[vBase + 2] = rz;
+    dustVerts32[vBase + 3] = 0.85;
+    // Tail vertex stretched opposite velocity
+    dustVerts32[vBase + 4] = rx - vxNorm * (0.4 + streakLen);
+    dustVerts32[vBase + 5] = ry - vyNorm * (0.4 + streakLen);
+    dustVerts32[vBase + 6] = rz - vzNorm * (0.4 + streakLen);
+    dustVerts32[vBase + 7] = 0.0;
+  }
+
+  currentSpeed = Math.hypot(shipVel64[0], shipVel64[1], shipVel64[2]);
+  const targetWarpFactor = warpActive ? Math.min(1.0, currentSpeed / 700.0) : (boosting ? Math.min(0.45, 0.16 + currentSpeed / 460.0) : 0.0);
+  warpVisualFactor += (targetWarpFactor - warpVisualFactor) * Math.min(1.0, dt * 5.0);
+  if (toastTimer > 0.0) toastTimer = Math.max(0.0, toastTimer - dt);
+
+  updateAudioTelemetry(currentSpeed, boosting, warpActive, scanningKey);
+}
+
+/* ============================================================================
+   10. WEBGL 2 CAMERA-RELATIVE RENDERING & 2D CANVAS HUD
+   ============================================================================ */
+function renderScene(timeSec) {
+  const aspect = viewWidth / viewHeight;
+  const fovRad = (62.0 + warpVisualFactor * 12.0) * (Math.PI / 180.0);
+  buildPerspectiveMatrix(projMat, fovRad, aspect, 0.1, FAR_PLANE);
+  buildViewRotationMatrix(viewRotMat, vecRight, vecUp, vecForward);
+  mat4Multiply(viewProjMat, projMat, viewRotMat);
+
+  shipPos32[0] = shipPos64[0];
+  shipPos32[1] = shipPos64[1];
+  shipPos32[2] = shipPos64[2];
+
+  sunRelPos32[0] = bodyPos64[0] - shipPos64[0];
+  sunRelPos32[1] = bodyPos64[1] - shipPos64[1];
+  sunRelPos32[2] = bodyPos64[2] - shipPos64[2];
+  const sunDist = Math.hypot(sunRelPos32[0], sunRelPos32[1], sunRelPos32[2]) || 1.0;
+
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+  gl.depthMask(true);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // 1. Deep Black Space & Pinpoint Starfield Skybox
+  gl.disable(gl.DEPTH_TEST);
+  gl.useProgram(skyProg);
+  gl.bindVertexArray(quadVAO);
+  gl.uniform3fv(skyLoc.uCamRight, vecRight);
+  gl.uniform3fv(skyLoc.uCamUp, vecUp);
+  gl.uniform3fv(skyLoc.uCamForward, vecForward);
+  gl.uniform1f(skyLoc.uAspect, aspect);
+  gl.uniform1f(skyLoc.uTanHalfFov, Math.tan(fovRad * 0.5));
+  tempVec3[0] = sunRelPos32[0] / sunDist;
+  tempVec3[1] = sunRelPos32[1] / sunDist;
+  tempVec3[2] = sunRelPos32[2] / sunDist;
+  gl.uniform3fv(skyLoc.uSunDir, tempVec3);
+  gl.uniform1f(skyLoc.uWarpFactor, warpVisualFactor);
+  if (currentSpeed > 0.1) {
+    tempVec3[0] = shipVel64[0] / currentSpeed;
+    tempVec3[1] = shipVel64[1] / currentSpeed;
+    tempVec3[2] = shipVel64[2] / currentSpeed;
+  } else {
+    tempVec3.set(vecForward);
+  }
+  gl.uniform3fv(skyLoc.uVelDir, tempVec3);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+  // 2. Subtle Planetary Orbital Arcs & Flyby Checkpoint Rings
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.depthMask(false);
+  gl.useProgram(lineProg);
+  gl.bindVertexArray(ringVAO);
+  gl.uniformMatrix4fv(lineLoc.uViewProj, false, viewProjMat);
+  gl.uniform1f(lineLoc.uFcoef, FCOEF);
+
+  for (let i = 1; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const pIdx = b.parentIdx * 3;
+    relPos32[0] = bodyPos64[pIdx + 0] - shipPos64[0];
+    relPos32[1] = bodyPos64[pIdx + 1] - shipPos64[1];
+    relPos32[2] = bodyPos64[pIdx + 2] - shipPos64[2];
+
+    gl.uniform3fv(lineLoc.uOffset, relPos32);
+    gl.uniform1f(lineLoc.uScale, b.orbitRadius);
+    gl.uniform1f(lineLoc.uTilt, b.isPlanetOrbit ? 0.025 : 0.05);
+    gl.uniform1f(lineLoc.uSpin, 0.0);
+    if (i === targetIndex) {
+      lineColor4[0] = 0.25; lineColor4[1] = 0.68; lineColor4[2] = 0.92; lineColor4[3] = 0.22;
+    } else {
+      lineColor4[0] = 0.45; lineColor4[1] = 0.56; lineColor4[2] = 0.72; lineColor4[3] = b.isPlanetOrbit ? 0.06 : 0.04;
+    }
+    gl.uniform4fv(lineLoc.uColor, lineColor4);
+    gl.drawArrays(gl.LINE_LOOP, 0, ORBIT_SEGMENTS);
+  }
+
+  // Flyby Checkpoint Gates (Proportionally sized smaller than planets/moons; toggleable)
+  if (ringsEnabled) {
+    gl.disable(gl.CULL_FACE);
+    gl.useProgram(gateProg);
+    gl.bindVertexArray(gateVAO);
+    gl.uniformMatrix4fv(gateLoc.uViewProj, false, viewProjMat);
+    gl.uniform1f(gateLoc.uFcoef, FCOEF);
+    gl.uniform1f(gateLoc.uTime, timeSec);
+
+    for (let i = 0; i < BODY_COUNT; i++) {
+      const b = ALL_BODIES[i];
+      const idx = i * 3;
+      relPos32[0] = gatePos64[idx + 0] - shipPos64[0];
+      relPos32[1] = gatePos64[idx + 1] - shipPos64[1];
+      relPos32[2] = gatePos64[idx + 2] - shipPos64[2];
+      const gateRadius = getGateRadius(b);
+
+      if (b.ringCleared) {
+        lineColor4[0] = 0.22; lineColor4[1] = 0.80; lineColor4[2] = 0.58; lineColor4[3] = 0.35;
+      } else if (i === targetIndex) {
+        lineColor4[0] = 0.96; lineColor4[1] = 0.74; lineColor4[2] = 0.24; lineColor4[3] = 0.88;
+      } else {
+        lineColor4[0] = 0.26; lineColor4[1] = 0.78; lineColor4[2] = 0.96; lineColor4[3] = 0.68;
+      }
+
+      gl.uniform3fv(gateLoc.uOffset, relPos32);
+      gl.uniform4fv(gateLoc.uColor, lineColor4);
+
+      gl.uniform1f(gateLoc.uScale, gateRadius);
+      gl.uniform1f(gateLoc.uTilt, 1.32);
+      gl.uniform1f(gateLoc.uSpin, timeSec * 0.45 + i);
+      gl.drawElements(gl.TRIANGLES, gateIndexCount, gl.UNSIGNED_SHORT, 0);
+    }
+  }
+
+  // 3. Instanced Asteroid Belt
+  gl.disable(gl.BLEND);
+  gl.depthMask(true);
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  gl.useProgram(astProg);
+  gl.bindVertexArray(astVAO);
+  gl.uniformMatrix4fv(astLoc.uViewProj, false, viewProjMat);
+  gl.uniform3fv(astLoc.uShipPos, shipPos32);
+  gl.uniform3fv(astLoc.uSunPos, sunRelPos32);
+  gl.uniform1f(astLoc.uTime, timeSec);
+  gl.uniform1f(astLoc.uFcoef, FCOEF);
+  gl.drawElementsInstanced(gl.TRIANGLES, astIndexCount, gl.UNSIGNED_SHORT, 0, ASTEROID_COUNT);
+
+  // 4. Solid Planetary, Solar & Moon Surfaces (Uber-Shader Pass 0)
+  gl.useProgram(uberProg);
+  gl.bindVertexArray(sphereVAO);
+  gl.uniformMatrix4fv(uberLoc.uViewProj, false, viewProjMat);
+  gl.uniform3fv(uberLoc.uSunPos, sunRelPos32);
+  gl.uniform1f(uberLoc.uFcoef, FCOEF);
+  gl.uniform1f(uberLoc.uTime, timeSec);
+
+  for (let i = 0; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const idx = i * 3;
+    relPos32[0] = bodyPos64[idx + 0] - shipPos64[0];
+    relPos32[1] = bodyPos64[idx + 1] - shipPos64[1];
+    relPos32[2] = bodyPos64[idx + 2] - shipPos64[2];
+
+    gl.uniform3fv(uberLoc.uBodyPos, relPos32);
+    gl.uniform1f(uberLoc.uBodyRadius, b.radius);
+    gl.uniform1f(uberLoc.uAxialTilt, b.axialTilt);
+    gl.uniform1f(uberLoc.uRotAngle, timeSec * b.rotationSpeed);
+    gl.uniform1f(uberLoc.uPassScale, 1.0);
+    gl.uniform1i(uberLoc.uBodyType, b.type);
+    gl.uniform1i(uberLoc.uRenderPass, 0);
+    gl.uniform3fv(uberLoc.uBaseColor, b.baseColor);
+    gl.uniform3fv(uberLoc.uSecColor, b.secColor);
+    gl.uniform3fv(uberLoc.uAtmoColor, b.atmoColor);
+    gl.uniform1f(uberLoc.uAtmoStrength, b.atmoStrength);
+    gl.uniform1f(uberLoc.uNoiseScale, b.noiseScale);
+    gl.uniform1f(uberLoc.uCloudDensity, b.cloudDensity);
+    gl.uniform1f(uberLoc.uRingInner, b.ringInner);
+    gl.uniform1f(uberLoc.uRingOuter, b.ringOuter);
+    gl.drawElements(gl.TRIANGLES, sphereIndexCount, gl.UNSIGNED_SHORT, 0);
+  }
+
+  // 5. Volumetric Corona, Rayleigh Halos & Intersected Rings (Pass 1 & 2)
+  gl.enable(gl.BLEND);
+  gl.depthMask(false);
+
+  for (let i = 0; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const idx = i * 3;
+    relPos32[0] = bodyPos64[idx + 0] - shipPos64[0];
+    relPos32[1] = bodyPos64[idx + 1] - shipPos64[1];
+    relPos32[2] = bodyPos64[idx + 2] - shipPos64[2];
+
+    gl.uniform3fv(uberLoc.uBodyPos, relPos32);
+    gl.uniform1f(uberLoc.uBodyRadius, b.radius);
+    gl.uniform1f(uberLoc.uAxialTilt, b.axialTilt);
+    gl.uniform1f(uberLoc.uRotAngle, timeSec * b.rotationSpeed);
+    gl.uniform1i(uberLoc.uBodyType, b.type);
+    gl.uniform3fv(uberLoc.uBaseColor, b.baseColor);
+    gl.uniform3fv(uberLoc.uSecColor, b.secColor);
+    gl.uniform3fv(uberLoc.uAtmoColor, b.atmoColor);
+    gl.uniform1f(uberLoc.uAtmoStrength, b.atmoStrength);
+
+    if (b.atmoStrength > 0.05) {
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      gl.cullFace(gl.BACK);
+      gl.uniform1i(uberLoc.uRenderPass, 1);
+      gl.uniform1f(uberLoc.uPassScale, b.type === 0 ? 1.30 : 1.075);
+      gl.drawElements(gl.TRIANGLES, sphereIndexCount, gl.UNSIGNED_SHORT, 0);
+    }
+
+    if (b.ringOuter > 0.1) {
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.cullFace(gl.FRONT);
+      gl.uniform1i(uberLoc.uRenderPass, 2);
+      gl.uniform1f(uberLoc.uPassScale, b.ringOuter * 1.12);
+      gl.uniform1f(uberLoc.uRingInner, b.ringInner);
+      gl.uniform1f(uberLoc.uRingOuter, b.ringOuter);
+      bodyAxis32[0] = -Math.sin(b.axialTilt);
+      bodyAxis32[1] = Math.cos(b.axialTilt);
+      bodyAxis32[2] = 0.0;
+      gl.uniform3fv(uberLoc.uRingNormal, bodyAxis32);
+      gl.drawElements(gl.TRIANGLES, sphereIndexCount, gl.UNSIGNED_SHORT, 0);
+    }
+  }
+
+  // 6. 3D Parallax Moving Stars (Always active for continuous depth & forward motion cue)
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.useProgram(pStarProg);
+  gl.bindVertexArray(pStarVAO);
+  gl.bindBuffer(gl.ARRAY_BUFFER, pStarVBO);
+  gl.bufferSubData(gl.ARRAY_BUFFER, 0, pStarVerts32);
+  gl.uniformMatrix4fv(pStarLoc.uViewProj, false, viewProjMat);
+  gl.uniform1f(pStarLoc.uFcoef, FCOEF);
+  gl.uniform1f(pStarLoc.uDpr, dpr);
+  gl.drawArrays(gl.POINTS, 0, PSTAR_COUNT);
+
+  // 7. 3D Velocity Speed Streaks (Smoothly fade in during thrust / warp)
+  if (currentSpeed > 12.0 || warpActive) {
+    gl.useProgram(dustProg);
+    gl.bindVertexArray(dustVAO);
+    gl.bindBuffer(gl.ARRAY_BUFFER, dustVBO);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, dustVerts32);
+    gl.uniformMatrix4fv(dustLoc.uViewProj, false, viewProjMat);
+    gl.uniform1f(dustLoc.uFcoef, FCOEF);
+    if (warpActive) {
+      lineColor4[0] = 0.94; lineColor4[1] = 0.84; lineColor4[2] = 0.62; lineColor4[3] = 0.42;
+    } else {
+      lineColor4[0] = 0.80; lineColor4[1] = 0.88; lineColor4[2] = 1.0; lineColor4[3] = Math.min(0.42, (currentSpeed - 12.0) * 0.0022);
+    }
+    gl.uniform4fv(dustLoc.uColor, lineColor4);
+    gl.drawArrays(gl.LINES, 0, DUST_COUNT * 2);
+  }
+
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+}
+
+function renderHUD() {
+  ctx2d.clearRect(0, 0, hudCanvas.width, hudCanvas.height);
+  if (hudHidden) return;
+  ctx2d.save();
+  ctx2d.scale(dpr, dpr);
+
+  const cx = viewWidth * 0.5;
+  const cy = viewHeight * 0.5;
+  const uiScale = Math.min(1.18, Math.max(0.76, Math.min(viewWidth, viewHeight) / 900));
+
+  // Center Flight Reticle
+  ctx2d.strokeStyle = warpActive ? "rgba(251, 191, 36, 0.80)" : orbitActive ? "rgba(34, 211, 238, 0.80)" : "rgba(56, 189, 248, 0.60)";
+  ctx2d.lineWidth = 1.5;
+  ctx2d.beginPath();
+  ctx2d.arc(cx, cy, 13 * uiScale, 0, Math.PI * 2);
+  ctx2d.moveTo(cx - 26 * uiScale, cy); ctx2d.lineTo(cx - 17 * uiScale, cy);
+  ctx2d.moveTo(cx + 17 * uiScale, cy); ctx2d.lineTo(cx + 26 * uiScale, cy);
+  ctx2d.moveTo(cx, cy - 22 * uiScale); ctx2d.lineTo(cx, cy - 17 * uiScale);
+  ctx2d.stroke();
+
+  // Discovery Scan Ring around active target or center
+  const tBody = ALL_BODIES[targetIndex];
+  if (!tBody.discovered && tBody.scanProgress > 0.01) {
+    ctx2d.strokeStyle = "#34d399";
+    ctx2d.lineWidth = 2.5;
+    ctx2d.beginPath();
+    ctx2d.arc(cx, cy, 24 * uiScale, -Math.PI * 0.5, -Math.PI * 0.5 + Math.PI * 2 * tBody.scanProgress);
+    ctx2d.stroke();
+
+    ctx2d.fillStyle = "#34d399";
+    ctx2d.font = `600 ${Math.round(11 * uiScale)}px monospace`;
+    ctx2d.textAlign = "center";
+    ctx2d.fillText(`SCANNING ${(tBody.scanProgress * 100).toFixed(0)}%`, cx, cy + 40 * uiScale);
+    ctx2d.textAlign = "left";
+  }
+
+  // Project Celestial Bodies & Checkpoint Markers
+  for (let i = 0; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const idx = i * 3;
+    const rx = bodyPos64[idx + 0] - shipPos64[0];
+    const ry = bodyPos64[idx + 1] - shipPos64[1];
+    const rz = bodyPos64[idx + 2] - shipPos64[2];
+    const dist = Math.hypot(rx, ry, rz);
+
+    const clipX = viewProjMat[0] * rx + viewProjMat[4] * ry + viewProjMat[8]  * rz + viewProjMat[12];
+    const clipY = viewProjMat[1] * rx + viewProjMat[5] * ry + viewProjMat[9]  * rz + viewProjMat[13];
+    const clipW = viewProjMat[3] * rx + viewProjMat[7] * ry + viewProjMat[11] * rz + viewProjMat[15];
+    const isSelected = (i === targetIndex);
+
+    if (clipW > 0.1) {
+      const sx = (clipX / clipW * 0.5 + 0.5) * viewWidth;
+      const sy = (1.0 - (clipY / clipW * 0.5 + 0.5)) * viewHeight;
+
+      if (sx >= -80 && sx <= viewWidth + 80 && sy >= -80 && sy <= viewHeight + 80) {
+        const projRadius = Math.max(14 * uiScale, Math.min(135 * uiScale, (b.radius / dist) * (viewHeight * 0.85)));
+
+        if (isSelected) {
+          ctx2d.strokeStyle = warpActive ? "#fbbf24" : b.discovered ? "#34d399" : "#38bdf8";
+          ctx2d.lineWidth = 2;
+          const br = projRadius + 8;
+          const len = Math.max(8, br * 0.30);
+          ctx2d.beginPath();
+          ctx2d.moveTo(sx - br, sy - br + len); ctx2d.lineTo(sx - br, sy - br); ctx2d.lineTo(sx - br + len, sy - br);
+          ctx2d.moveTo(sx + br - len, sy - br); ctx2d.lineTo(sx + br, sy - br); ctx2d.lineTo(sx + br, sy - br + len);
+          ctx2d.moveTo(sx - br, sy + br - len); ctx2d.lineTo(sx - br, sy + br); ctx2d.lineTo(sx - br + len, sy + br);
+          ctx2d.moveTo(sx + br - len, sy + br); ctx2d.lineTo(sx + br, sy + br); ctx2d.lineTo(sx + br, sy + br - len);
+          ctx2d.stroke();
+
+          ctx2d.fillStyle = "#f8fafc";
+          ctx2d.font = `700 ${Math.round(13 * uiScale)}px 'Oxanium', system-ui, sans-serif`;
+          ctx2d.fillText(`${b.name.toUpperCase()}${b.discovered ? " ✓" : ""}`, sx - br, sy - br - 19);
+
+          ctx2d.fillStyle = warpActive ? "#fde68a" : "#7dd3fc";
+          ctx2d.font = `500 ${Math.round(11 * uiScale)}px monospace`;
+          const alt = Math.max(0, dist - b.radius);
+          const distStr = alt > 1000 ? `${(alt / 1000).toFixed(2)} Mm` : `${alt.toFixed(0)} km`;
+          ctx2d.fillText(`ALT ${distStr}`, sx - br, sy - br - 6);
+        } else if (b.isPlanetOrbit || dist < 1200) {
+          ctx2d.strokeStyle = b.discovered ? "rgba(52, 211, 153, 0.55)" : "rgba(148, 163, 184, 0.45)";
+          ctx2d.lineWidth = 1;
+          ctx2d.beginPath();
+          ctx2d.arc(sx, sy, 3.8, 0, Math.PI * 2);
+          ctx2d.stroke();
+
+          ctx2d.fillStyle = b.discovered ? "rgba(167, 243, 208, 0.78)" : "rgba(203, 213, 225, 0.72)";
+          ctx2d.font = `500 ${Math.round(10 * uiScale)}px 'Oxanium', system-ui, sans-serif`;
+          ctx2d.fillText(b.name.toUpperCase(), sx + 7, sy + 3);
+        }
+      } else if (isSelected) {
+        drawOffscreenTargetArrow(rx, ry, rz, cx, cy, uiScale, b.name);
+      }
+    } else if (isSelected) {
+      drawOffscreenTargetArrow(rx, ry, rz, cx, cy, uiScale, b.name);
+    }
+
+    // Project HUD beacon for active target gate or nearby uncleared gates when rings are enabled
+    if (ringsEnabled && !b.ringCleared && (isSelected || dist < 1400)) {
+      const gx = gatePos64[idx + 0] - shipPos64[0];
+      const gy = gatePos64[idx + 1] - shipPos64[1];
+      const gz = gatePos64[idx + 2] - shipPos64[2];
+      const gDist = Math.hypot(gx, gy, gz);
+      const gcx = viewProjMat[0] * gx + viewProjMat[4] * gy + viewProjMat[8]  * gz + viewProjMat[12];
+      const gcy = viewProjMat[1] * gx + viewProjMat[5] * gy + viewProjMat[9]  * gz + viewProjMat[13];
+      const gcw = viewProjMat[3] * gx + viewProjMat[7] * gy + viewProjMat[11] * gz + viewProjMat[15];
+      if (gcw > 0.1) {
+        const gsx = (gcx / gcw * 0.5 + 0.5) * viewWidth;
+        const gsy = (1.0 - (gcy / gcw * 0.5 + 0.5)) * viewHeight;
+        if (gsx >= -20 && gsx <= viewWidth + 20 && gsy >= -20 && gsy <= viewHeight + 20) {
+          const rMark = isSelected ? 10 * uiScale : 7 * uiScale;
+          ctx2d.strokeStyle = isSelected ? "#fbbf24" : "#38bdf8";
+          ctx2d.lineWidth = isSelected ? 1.8 : 1.3;
+          ctx2d.beginPath();
+          ctx2d.arc(gsx, gsy, rMark, 0, Math.PI * 2);
+          ctx2d.stroke();
+          ctx2d.fillStyle = isSelected ? "#fde68a" : "#7dd3fc";
+          ctx2d.font = `600 ${Math.round(10 * uiScale)}px monospace`;
+          ctx2d.fillText(`RING ${gDist.toFixed(0)} km`, gsx + rMark + 5, gsy + 4);
+        }
+      }
+    }
+  }
+
+  // Left Telemetry Panel
+  const tIdx = targetIndex * 3;
+  const tDist = Math.max(0, Math.hypot(
+    bodyPos64[tIdx + 0] - shipPos64[0],
+    bodyPos64[tIdx + 1] - shipPos64[1],
+    bodyPos64[tIdx + 2] - shipPos64[2]
+  ) - tBody.radius);
+
+  const panelY = Math.max(62, viewHeight * 0.10);
+  const panelW = 260 * uiScale;
+  const panelH = 98 * uiScale;
+  ctx2d.fillStyle = "rgba(7, 11, 20, 0.78)";
+  ctx2d.strokeStyle = "rgba(148, 163, 184, 0.28)";
+  ctx2d.lineWidth = 1;
+  ctx2d.fillRect(14, panelY, panelW, panelH);
+  ctx2d.strokeRect(14, panelY, panelW, panelH);
+
+  ctx2d.fillStyle = tBody.discovered ? "#34d399" : "#38bdf8";
+  ctx2d.font = `700 ${Math.round(11 * uiScale)}px 'Oxanium', system-ui, sans-serif`;
+  ctx2d.fillText(`TARGET · ${tBody.name.toUpperCase()} · ${tBody.discovered ? "SURVEYED" : "UNSCANNED"}`, 25, panelY + 21 * uiScale);
+
+  ctx2d.fillStyle = "#cbd5e1";
+  ctx2d.font = `400 ${Math.round(11 * uiScale)}px 'Oxanium', system-ui, sans-serif`;
+  ctx2d.fillText(tBody.subtitle, 25, panelY + 40 * uiScale);
+
+  ctx2d.fillStyle = "#94a3b8";
+  ctx2d.font = `400 ${Math.round(10 * uiScale)}px monospace`;
+  ctx2d.fillText(tBody.stats, 25, panelY + 58 * uiScale);
+
+  ctx2d.fillStyle = warpActive ? "#fbbf24" : orbitActive ? "#22d3ee" : "#f8fafc";
+  ctx2d.font = `600 ${Math.round(12 * uiScale)}px monospace`;
+  const modeStr = warpActive
+    ? `WARP ${(currentSpeed / 300).toFixed(2)} c`
+    : orbitActive
+      ? `ORBIT ${currentSpeed.toFixed(0)} km/s`
+      : `VEL ${currentSpeed.toFixed(1)} km/s`;
+  const rangeStr = tDist > 1000 ? `${(tDist / 1000).toFixed(2)} Mm` : `${tDist.toFixed(0)} km`;
+  ctx2d.fillText(`${modeStr} · RNG ${rangeStr}`, 25, panelY + 80 * uiScale);
+
+  // Discovery Notification Banner
+  if (toastTimer > 0.0) {
+    const alpha = Math.min(1.0, toastTimer);
+    ctx2d.fillStyle = `rgba(6, 78, 59, ${0.82 * alpha})`;
+    ctx2d.strokeStyle = `rgba(52, 211, 153, ${0.85 * alpha})`;
+    const tw = Math.min(viewWidth - 40, 390 * uiScale);
+    const tx = cx - tw * 0.5;
+    const ty = viewHeight * 0.16;
+    ctx2d.fillRect(tx, ty, tw, 36 * uiScale);
+    ctx2d.strokeRect(tx, ty, tw, 36 * uiScale);
+    ctx2d.fillStyle = `rgba(236, 253, 245, ${alpha})`;
+    ctx2d.font = `700 ${Math.round(12 * uiScale)}px 'Oxanium', system-ui, sans-serif`;
+    ctx2d.textAlign = "center";
+    ctx2d.fillText(toastText, cx, ty + 22 * uiScale);
+    ctx2d.textAlign = "left";
+  }
+
+  ctx2d.restore();
+}
+
+function drawOffscreenTargetArrow(rx, ry, rz, cx, cy, uiScale, name) {
+  const localX = rx * vecRight[0] + ry * vecRight[1] + rz * vecRight[2];
+  const localY = -(rx * vecUp[0] + ry * vecUp[1] + rz * vecUp[2]);
+  const angle = Math.atan2(localY, localX);
+  const radius = Math.min(cx, cy) * 0.72;
+  const ax = cx + Math.cos(angle) * radius;
+  const ay = cy + Math.sin(angle) * radius;
+
+  ctx2d.save();
+  ctx2d.translate(ax, ay);
+  ctx2d.rotate(angle);
+  ctx2d.fillStyle = warpActive ? "#fbbf24" : "#38bdf8";
+  ctx2d.beginPath();
+  ctx2d.moveTo(12 * uiScale, 0);
+  ctx2d.lineTo(-8 * uiScale, -7 * uiScale);
+  ctx2d.lineTo(-4 * uiScale, 0);
+  ctx2d.lineTo(-8 * uiScale, 7 * uiScale);
+  ctx2d.closePath();
+  ctx2d.fill();
+  ctx2d.restore();
+
+  ctx2d.fillStyle = warpActive ? "#fde68a" : "#bae6fd";
+  ctx2d.font = `600 ${Math.round(11 * uiScale)}px 'Oxanium', system-ui, sans-serif`;
+  ctx2d.textAlign = "center";
+  ctx2d.fillText(name.toUpperCase(), ax, ay - 14 * uiScale);
+  ctx2d.textAlign = "left";
+}
+
+function animate(now) {
+  const dt = Math.min(0.05, Math.max(0.001, (now - lastTime) * 0.001));
+  lastTime = now;
+  simTime += dt;
+
+  updateCelestialOrbits(simTime);
+  stepPhysics(dt);
+  renderScene(simTime);
+  renderHUD();
+
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
