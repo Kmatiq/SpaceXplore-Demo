@@ -4,6 +4,8 @@
 
 The Sun, all eight planets, major moons, a flyable asteroid belt, and checkpoint rings to thread through. Everything is generated procedurally by code—no external images, 3D models, or sound files. The entire experience fits in **one 118 KB HTML file**.
 
+![Saturn, Titan, Earth, and the Sun in deep space with an orbital checkpoint arc](.github/screenshots/solar-flight.jpg)
+
 ## Try it
 
 1. Download **`index.html`**: open [`index.html`](index.html) and click **Download raw file** (top-right on GitHub), or right-click → *Save Link As...* on [`raw index.html`](index.html?raw=true).
