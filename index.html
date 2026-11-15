@@ -736,7 +736,7 @@ const STAR_SYSTEM = {
     id: "sun",
     name: "The Sun",
     type: 0, // 0: Star
-    radius: 420.0,
+    radius: 680.0,
     orbitRadius: 0.0,
     orbitSpeed: 0.0,
     orbitPhase: 0.0,
@@ -745,7 +745,12 @@ const STAR_SYSTEM = {
     baseColor: [0.96, 0.56, 0.14],
     secColor: [1.0, 0.90, 0.52],
     atmoColor: [0.98, 0.52, 0.16],
+    skyColor: [0.98, 0.56, 0.18],
     atmoStrength: 0.95,
+    atmoHeight: 0.25,
+    cloudAlt: 0.0,
+    reliefAmp: 0.0,
+    canyonDepth: 0.0,
     noiseScale: 4.0,
     cloudDensity: 0.0,
     ringInner: 0.0,
@@ -759,16 +764,21 @@ const STAR_SYSTEM = {
       id: "mercury",
       name: "Mercury",
       type: 1,
-      radius: 34.0,
-      orbitRadius: 2400.0,
-      orbitSpeed: 0.015,
+      radius: 125.0,
+      orbitRadius: 3600.0,
+      orbitSpeed: 0.014,
       orbitPhase: 0.35,
-      rotationSpeed: 0.05,
+      rotationSpeed: 0.04,
       axialTilt: 0.03,
       baseColor: [0.58, 0.55, 0.52],
       secColor: [0.30, 0.28, 0.27],
       atmoColor: [0.65, 0.62, 0.58],
-      atmoStrength: 0.08,
+      skyColor: [0.08, 0.08, 0.09],
+      atmoStrength: 0.04,
+      atmoHeight: 0.14,
+      cloudAlt: 0.0,
+      reliefAmp: 6.2,
+      canyonDepth: 0.25,
       noiseScale: 6.2,
       cloudDensity: 0.0,
       ringInner: 0.0,
@@ -781,60 +791,75 @@ const STAR_SYSTEM = {
       id: "venus",
       name: "Venus",
       type: 2,
-      radius: 66.0,
-      orbitRadius: 4300.0,
-      orbitSpeed: 0.011,
+      radius: 230.0,
+      orbitRadius: 6800.0,
+      orbitSpeed: 0.010,
       orbitPhase: 1.05,
-      rotationSpeed: -0.03,
+      rotationSpeed: -0.025,
       axialTilt: 0.05,
-      baseColor: [0.84, 0.68, 0.42],
-      secColor: [0.94, 0.84, 0.60],
-      atmoColor: [0.92, 0.78, 0.52],
-      atmoStrength: 0.72,
-      noiseScale: 3.4,
-      cloudDensity: 0.92,
+      baseColor: [0.76, 0.54, 0.32],
+      secColor: [0.42, 0.26, 0.16],
+      atmoColor: [0.94, 0.78, 0.48],
+      skyColor: [0.92, 0.70, 0.34],
+      atmoStrength: 0.85,
+      atmoHeight: 0.38,
+      cloudAlt: 1.052,
+      reliefAmp: 8.0,
+      canyonDepth: 0.35,
+      noiseScale: 3.8,
+      cloudDensity: 0.94,
       ringInner: 0.0,
       ringOuter: 0.0,
       subtitle: "Super-Rotating Sulfuric World",
       stats: "0.90 g · 464 °C Surface",
-      fact: "Upper sulfuric-acid cloud decks super-rotate around the globe in just four Earth days beneath golden sunlight."
+      fact: "Upper sulfuric-acid cloud decks super-rotate around the globe above dark volcanic basalt highlands."
     },
     {
       id: "earth",
       name: "Earth",
       type: 3,
-      radius: 74.0,
-      orbitRadius: 6800.0,
-      orbitSpeed: 0.008,
+      radius: 280.0,
+      orbitRadius: 11200.0,
+      orbitSpeed: 0.007,
       orbitPhase: 1.65,
-      rotationSpeed: 0.12,
+      rotationSpeed: 0.06,
       axialTilt: 0.41,
       baseColor: [0.06, 0.28, 0.58],
       secColor: [0.18, 0.48, 0.26],
       atmoColor: [0.35, 0.68, 0.98],
-      atmoStrength: 0.86,
+      skyColor: [0.24, 0.56, 0.96],
+      atmoStrength: 0.90,
+      atmoHeight: 0.34,
+      cloudAlt: 1.050,
+      reliefAmp: 12.5,
+      canyonDepth: 0.15,
       noiseScale: 4.3,
-      cloudDensity: 0.55,
+      cloudDensity: 0.58,
       ringInner: 0.0,
       ringOuter: 0.0,
       subtitle: "Oceanic Biosphere · 1.00 AU",
       stats: "1.00 g · 15 °C Mean · 23.9 h Day",
-      fact: "Liquid water covers 71% of the crust; Rayleigh scattering paints a razor-thin cobalt atmospheric limb against space.",
+      fact: "Liquid water covers 71% of the crust; Rayleigh scattering paints a vivid blue sky beneath sunlit cloud decks.",
       moons: [
         {
           id: "luna",
           name: "Luna",
           type: 6,
-          radius: 22.0,
-          orbitRadius: 340.0,
-          orbitSpeed: 0.14,
+          radius: 78.0,
+          orbitRadius: 1150.0,
+          orbitSpeed: 0.09,
           orbitPhase: 0.75,
-          rotationSpeed: 0.14,
+          rotationSpeed: 0.09,
           axialTilt: 0.09,
           baseColor: [0.68, 0.69, 0.72],
           secColor: [0.34, 0.35, 0.38],
           atmoColor: [0.70, 0.75, 0.82],
-          atmoStrength: 0.04,
+          skyColor: [0.04, 0.04, 0.05],
+          atmoStrength: 0.03,
+          atmoHeight: 0.12,
+          cloudAlt: 0.0,
+          reliefAmp: 4.8,
+          canyonDepth: 0.20,
           noiseScale: 5.5,
           cloudDensity: 0.0,
           ringInner: 0.0,
@@ -849,38 +874,48 @@ const STAR_SYSTEM = {
       id: "mars",
       name: "Mars",
       type: 1,
-      radius: 48.0,
-      orbitRadius: 9600.0,
-      orbitSpeed: 0.006,
+      radius: 205.0,
+      orbitRadius: 16400.0,
+      orbitSpeed: 0.0055,
       orbitPhase: 2.35,
-      rotationSpeed: 0.13,
+      rotationSpeed: 0.065,
       axialTilt: 0.44,
-      baseColor: [0.76, 0.34, 0.20],
-      secColor: [0.42, 0.20, 0.14],
-      atmoColor: [0.85, 0.52, 0.38],
-      atmoStrength: 0.42,
+      baseColor: [0.78, 0.34, 0.19],
+      secColor: [0.42, 0.19, 0.12],
+      atmoColor: [0.88, 0.54, 0.36],
+      skyColor: [0.82, 0.46, 0.30],
+      atmoStrength: 0.52,
+      atmoHeight: 0.30,
+      cloudAlt: 1.044,
+      reliefAmp: 14.0,
+      canyonDepth: 1.0,
       noiseScale: 5.0,
-      cloudDensity: 0.12,
+      cloudDensity: 0.16,
       ringInner: 0.0,
       ringOuter: 0.0,
-      subtitle: "Oxide Regolith & Polar Caps",
+      subtitle: "Oxide Regolith & Canyons",
       stats: "0.38 g · -65 °C Mean · 24.6 h Day",
-      fact: "Home to Olympus Mons and Valles Marineris, dusted by iron-oxide plains and seasonal CO2 polar ice caps."
+      fact: "Home to Olympus Mons and Valles Marineris, sculpted with towering shield volcanoes, deep rift canyons, and iron-oxide plains."
     },
     {
       id: "jupiter",
       name: "Jupiter",
       type: 4,
-      radius: 185.0,
-      orbitRadius: 18500.0,
-      orbitSpeed: 0.0036,
+      radius: 540.0,
+      orbitRadius: 33000.0,
+      orbitSpeed: 0.0032,
       orbitPhase: 0.92,
-      rotationSpeed: 0.26,
+      rotationSpeed: 0.16,
       axialTilt: 0.06,
       baseColor: [0.82, 0.68, 0.50],
       secColor: [0.58, 0.36, 0.26],
       atmoColor: [0.88, 0.74, 0.56],
-      atmoStrength: 0.55,
+      skyColor: [0.78, 0.62, 0.44],
+      atmoStrength: 0.58,
+      atmoHeight: 0.30,
+      cloudAlt: 1.028,
+      reliefAmp: 0.0,
+      canyonDepth: 0.0,
       noiseScale: 4.5,
       cloudDensity: 0.85,
       ringInner: 0.0,
@@ -893,38 +928,48 @@ const STAR_SYSTEM = {
           id: "io",
           name: "Io",
           type: 6,
-          radius: 26.0,
-          orbitRadius: 460.0,
-          orbitSpeed: 0.19,
+          radius: 92.0,
+          orbitRadius: 1450.0,
+          orbitSpeed: 0.12,
           orbitPhase: 1.2,
-          rotationSpeed: 0.19,
+          rotationSpeed: 0.12,
           axialTilt: 0.02,
           baseColor: [0.86, 0.74, 0.30],
           secColor: [0.56, 0.24, 0.12],
           atmoColor: [0.88, 0.72, 0.32],
+          skyColor: [0.72, 0.52, 0.20],
           atmoStrength: 0.18,
+          atmoHeight: 0.18,
+          cloudAlt: 0.0,
+          reliefAmp: 6.2,
+          canyonDepth: 0.35,
           noiseScale: 6.2,
           cloudDensity: 0.0,
           ringInner: 0.0,
           ringOuter: 0.0,
           subtitle: "Volcanic Galilean Moon",
           stats: "0.18 g · 400+ Active Volcanoes",
-          fact: "Tidal flexing from Jupiter heats Io's interior, painting its surface in sulfur-gold and silicate calderas."
+          fact: "Tidal flexing from Jupiter heats Io's interior, painting its surface in sulfur-gold ridges and silicate calderas."
         },
         {
           id: "europa",
           name: "Europa",
           type: 6,
-          radius: 24.0,
-          orbitRadius: 640.0,
-          orbitSpeed: 0.12,
+          radius: 86.0,
+          orbitRadius: 2050.0,
+          orbitSpeed: 0.08,
           orbitPhase: 3.4,
-          rotationSpeed: 0.12,
+          rotationSpeed: 0.08,
           axialTilt: 0.04,
           baseColor: [0.78, 0.80, 0.82],
           secColor: [0.46, 0.36, 0.30],
           atmoColor: [0.68, 0.78, 0.88],
+          skyColor: [0.22, 0.32, 0.45],
           atmoStrength: 0.16,
+          atmoHeight: 0.16,
+          cloudAlt: 0.0,
+          reliefAmp: 3.8,
+          canyonDepth: 0.40,
           noiseScale: 7.5,
           cloudDensity: 0.0,
           ringInner: 0.0,
@@ -939,16 +984,21 @@ const STAR_SYSTEM = {
       id: "saturn",
       name: "Saturn",
       type: 4,
-      radius: 155.0,
-      orbitRadius: 26000.0,
-      orbitSpeed: 0.0024,
+      radius: 460.0,
+      orbitRadius: 46000.0,
+      orbitSpeed: 0.0022,
       orbitPhase: 1.98,
-      rotationSpeed: 0.24,
+      rotationSpeed: 0.15,
       axialTilt: 0.46,
       baseColor: [0.84, 0.74, 0.54],
       secColor: [0.62, 0.52, 0.38],
       atmoColor: [0.88, 0.78, 0.58],
-      atmoStrength: 0.52,
+      skyColor: [0.82, 0.70, 0.48],
+      atmoStrength: 0.55,
+      atmoHeight: 0.30,
+      cloudAlt: 1.028,
+      reliefAmp: 0.0,
+      canyonDepth: 0.0,
       noiseScale: 3.8,
       cloudDensity: 0.7,
       ringInner: 1.38,
@@ -961,18 +1011,23 @@ const STAR_SYSTEM = {
           id: "titan",
           name: "Titan",
           type: 6,
-          radius: 32.0,
-          orbitRadius: 680.0,
-          orbitSpeed: 0.09,
+          radius: 112.0,
+          orbitRadius: 2150.0,
+          orbitSpeed: 0.06,
           orbitPhase: 2.3,
-          rotationSpeed: 0.09,
+          rotationSpeed: 0.06,
           axialTilt: 0.3,
           baseColor: [0.82, 0.56, 0.24],
           secColor: [0.54, 0.34, 0.16],
-          atmoColor: [0.86, 0.62, 0.28],
-          atmoStrength: 0.75,
-          noiseScale: 3.0,
-          cloudDensity: 0.7,
+          atmoColor: [0.88, 0.62, 0.28],
+          skyColor: [0.84, 0.52, 0.20],
+          atmoStrength: 0.78,
+          atmoHeight: 0.36,
+          cloudAlt: 1.046,
+          reliefAmp: 5.5,
+          canyonDepth: 0.25,
+          noiseScale: 3.4,
+          cloudDensity: 0.72,
           ringInner: 0.0,
           ringOuter: 0.0,
           subtitle: "Nitrogen-Haze Hydrocarbon Moon",
@@ -985,16 +1040,21 @@ const STAR_SYSTEM = {
       id: "uranus",
       name: "Uranus",
       type: 5,
-      radius: 96.0,
-      orbitRadius: 34000.0,
-      orbitSpeed: 0.0017,
+      radius: 300.0,
+      orbitRadius: 60000.0,
+      orbitSpeed: 0.0015,
       orbitPhase: 0.54,
-      rotationSpeed: -0.18,
+      rotationSpeed: -0.12,
       axialTilt: 1.42,
       baseColor: [0.48, 0.76, 0.78],
       secColor: [0.34, 0.58, 0.66],
       atmoColor: [0.56, 0.82, 0.86],
-      atmoStrength: 0.68,
+      skyColor: [0.46, 0.76, 0.82],
+      atmoStrength: 0.70,
+      atmoHeight: 0.30,
+      cloudAlt: 1.028,
+      reliefAmp: 0.0,
+      canyonDepth: 0.0,
       noiseScale: 2.6,
       cloudDensity: 0.4,
       ringInner: 1.50,
@@ -1007,16 +1067,21 @@ const STAR_SYSTEM = {
       id: "neptune",
       name: "Neptune",
       type: 5,
-      radius: 92.0,
-      orbitRadius: 42000.0,
-      orbitSpeed: 0.0012,
+      radius: 290.0,
+      orbitRadius: 74000.0,
+      orbitSpeed: 0.0011,
       orbitPhase: 2.82,
-      rotationSpeed: 0.20,
+      rotationSpeed: 0.14,
       axialTilt: 0.49,
       baseColor: [0.22, 0.42, 0.84],
       secColor: [0.14, 0.24, 0.62],
       atmoColor: [0.34, 0.56, 0.94],
-      atmoStrength: 0.74,
+      skyColor: [0.20, 0.42, 0.88],
+      atmoStrength: 0.76,
+      atmoHeight: 0.30,
+      cloudAlt: 1.028,
+      reliefAmp: 0.0,
+      canyonDepth: 0.0,
       noiseScale: 3.6,
       cloudDensity: 0.6,
       ringInner: 0.0,
@@ -1064,6 +1129,7 @@ const DUST_COUNT = 220;
    2. PREALLOCATED FLOAT64 & FLOAT32 MATH BUFFERS (ZERO PER-FRAME ALLOCATION)
    ============================================================================ */
 const bodyPos64 = new Float64Array(BODY_COUNT * 3);
+const prevBodyPos64 = new Float64Array(BODY_COUNT * 3);
 const gatePos64 = new Float64Array(BODY_COUNT * 3);
 const shipPos64 = new Float64Array(3);
 const shipVel64 = new Float64Array(3);
@@ -1085,6 +1151,87 @@ const viewRotMat = new Float32Array(16);
 const viewProjMat = new Float32Array(16);
 const bodyAxis32 = new Float32Array(3);
 const lineColor4 = new Float32Array(4);
+const atmoCenter32 = new Float32Array(3);
+const atmoSky32 = new Float32Array(3);
+const patchCenter32 = new Float32Array(3);
+const patchRight32 = new Float32Array(3);
+const patchUp32 = new Float32Array(3);
+let nearestBodyIdx = 3;
+let nearestAGL = 9999.0;
+let nearestAtmoDensity = 0.0;
+let cloudMistFactor = 0.0;
+let gravityBodyIdx = 3;
+let gravityLock = 1.0;
+
+// Shared Deterministic CPU Terrain Math (Matches GLSL terrainHeight 1-to-1)
+function fractJS(x) { return x - Math.floor(x); }
+function smoothJS(x) { return x * x * (3.0 - 2.0 * x); }
+function hash31JS(px, py, pz) {
+  let x = fractJS(px * 443.897), y = fractJS(py * 441.423), z = fractJS(pz * 437.195);
+  const d = x * (y + 19.19) + y * (z + 19.19) + z * (x + 19.19);
+  x += d; y += d; z += d;
+  return fractJS((x + y) * z);
+}
+function noise3JS(px, py, pz) {
+  const ix = Math.floor(px), iy = Math.floor(py), iz = Math.floor(pz);
+  const fx = smoothJS(px - ix), fy = smoothJS(py - iy), fz = smoothJS(pz - iz);
+  const n000 = hash31JS(ix, iy, iz),         n100 = hash31JS(ix + 1, iy, iz);
+  const n010 = hash31JS(ix, iy + 1, iz),     n110 = hash31JS(ix + 1, iy + 1, iz);
+  const n001 = hash31JS(ix, iy, iz + 1),     n101 = hash31JS(ix + 1, iy, iz + 1);
+  const n011 = hash31JS(ix, iy + 1, iz + 1), n111 = hash31JS(ix + 1, iy + 1, iz + 1);
+  const nx00 = n000 + (n100 - n000) * fx, nx10 = n010 + (n110 - n010) * fx;
+  const nx01 = n001 + (n101 - n001) * fx, nx11 = n011 + (n111 - n011) * fx;
+  const nxy0 = nx00 + (nx10 - nx00) * fy, nxy1 = nx01 + (nx11 - nx01) * fy;
+  return nxy0 + (nxy1 - nxy0) * fz;
+}
+function fbm4JS(px, py, pz) {
+  let v = 0.0, amp = 0.5;
+  for (let i = 0; i < 4; i++) {
+    v += amp * noise3JS(px, py, pz);
+    const nx = px * 2.04 + 13.1, ny = py * 2.04 + 7.7, nz = pz * 2.04 + 5.3;
+    px = nx; py = ny; pz = nz;
+    amp *= 0.5;
+  }
+  return v;
+}
+function terrainHeightJS(lx, ly, lz, b) {
+  if (b.reliefAmp <= 0.01) return 0.0;
+  const ns = b.noiseScale;
+  const base = fbm4JS(lx * ns, ly * ns, lz * ns);
+  const ridgeRaw = 1.0 - Math.abs(noise3JS(lx * ns * 2.35, ly * ns * 2.35, lz * ns * 2.35) * 2.0 - 1.0);
+  const ridge = ridgeRaw * ridgeRaw;
+  if (b.type === 3) {
+    // Earth: flat ocean <= 0, sloping lowlands & alpine mountain ridges above 0
+    if (base <= 0.485) return 0.0;
+    const cont = (base - 0.485) / 0.515;
+    const mtnMask = Math.min(1.0, Math.max(0.0, (cont - 0.14) / 0.58));
+    const mtnSmooth = mtnMask * mtnMask * (3.0 - 2.0 * mtnMask);
+    return (cont * 0.42 + ridge * mtnSmooth * 0.88) * b.reliefAmp;
+  }
+  // Mars, Mercury, Venus, Moons: crater basins, canyon rifts & rocky ridges
+  const crater = Math.abs(noise3JS(lx * ns * 3.4, ly * ns * 3.4, lz * ns * 3.4) - 0.5) * 2.0;
+  let canyon = 0.0;
+  if (b.canyonDepth > 0.01) {
+    const rift = Math.abs(noise3JS(lx * 2.8 + 3.1, ly * 2.8 + 3.1, lz * 2.8 + 3.1) - 0.5);
+    const cMask = 1.0 - Math.min(1.0, rift / 0.14);
+    canyon = cMask * cMask * (3.0 - 2.0 * cMask) * b.canyonDepth * 0.52;
+  }
+  return ((base - 0.43) * 0.58 + ridge * 0.68 + crater * 0.16 - canyon) * b.reliefAmp;
+}
+function worldRelToBodyLocal(out, rx, ry, rz, axialTilt, rotAngle) {
+  const ct = Math.cos(-axialTilt), st = Math.sin(-axialTilt);
+  const tx = rx * ct - ry * st;
+  const ty = rx * st + ry * ct;
+  const tz = rz;
+  const cr = Math.cos(-rotAngle), sr = Math.sin(-rotAngle);
+  const lx = cr * tx + sr * tz;
+  const ly = ty;
+  const lz = -sr * tx + cr * tz;
+  const inv = 1.0 / (Math.hypot(lx, ly, lz) || 1.0);
+  out[0] = lx * inv;
+  out[1] = ly * inv;
+  out[2] = lz * inv;
+}
 
 // Preallocated 3D Parallax Moving Stars Pool (Seamless wrap-around, spherical fade)
 const PSTAR_BOX = 900.0;
@@ -1419,6 +1566,10 @@ uniform float uTanHalfFov;
 uniform vec3 uSunDir;
 uniform float uWarpFactor;
 uniform vec3 uVelDir;
+uniform vec3 uAtmoCenter;
+uniform vec3 uAtmoSkyColor;
+uniform float uAtmoDensity;
+uniform float uCloudMist;
 
 float hash31(vec3 p) {
   p = fract(p * vec3(443.897, 441.423, 437.195));
@@ -1436,7 +1587,14 @@ void main() {
   // Pure deep black outer space (zero painted skybox wall)
   vec3 bg = vec3(0.0);
 
-  // Rich, clearly visible multi-tier starfield against deep black space
+  // Atmospheric daylight factor fades stars out naturally inside sunlit skies
+  vec3 upDir = length(uAtmoCenter) > 0.1 ? normalize(-uAtmoCenter) : vec3(0.0, 1.0, 0.0);
+  float sunElev = dot(upDir, uSunDir);
+  float daylight = smoothstep(-0.28, 0.42, sunElev);
+  float sunset = smoothstep(-0.22, 0.06, sunElev) * (1.0 - smoothstep(0.04, 0.36, sunElev));
+  float starVis = 1.0 - clamp(uAtmoDensity * (0.20 + 0.85 * daylight), 0.0, 0.96);
+
+  // Rich multi-tier starfield against deep black space
   vec3 g1 = rayDir * 140.0;
   vec3 c1 = floor(g1);
   float h1 = hash31(c1);
@@ -1471,89 +1629,39 @@ void main() {
     bg += vec3(0.72, 0.78, 0.88) * (b3 * 0.42);
   }
 
-  // Tight restrained solar glare only near the Sun direction
+  bg *= starVis;
+
+  // Rayleigh Sky Scattering & Horizon Glow when inside a planet's atmosphere
   float sunCos = max(dot(rayDir, uSunDir), 0.0);
-  bg += vec3(1.0, 0.76, 0.45) * pow(sunCos, 64.0) * 0.22;
+  if (uAtmoDensity > 0.001) {
+    float zenith = clamp(dot(rayDir, upDir), 0.0, 1.0);
+    float horizFactor = pow(1.0 - zenith, 2.2);
+    vec3 zenithCol = uAtmoSkyColor * 0.48;
+    vec3 horizCol = mix(uAtmoSkyColor * 1.15 + vec3(0.18, 0.20, 0.22), vec3(0.96, 0.52, 0.28), sunset * 0.75);
+    vec3 skyCol = mix(zenithCol, horizCol, horizFactor);
+    skyCol += vec3(1.0, 0.82, 0.58) * pow(sunCos, 10.0) * 0.32;
+    bg += skyCol * uAtmoDensity * (0.08 + 0.92 * daylight);
+  }
+
+  // Tight restrained solar glare + atmospheric sun glow
+  bg += vec3(1.0, 0.76, 0.45) * pow(sunCos, 64.0) * (0.22 + 0.35 * uAtmoDensity);
+
+  // Soft wispy mist veil when passing directly through cloud layers
+  if (uCloudMist > 0.001) {
+    vec3 mistCol = mix(vec3(0.15, 0.18, 0.22), vec3(0.92, 0.95, 0.98), daylight);
+    bg = mix(bg, mistCol, uCloudMist * 0.62);
+  }
 
   fragColor = vec4(bg, 1.0);
 }`;
 
-/* --- B. Unified Spherical Body Uber-Shader (Sun, Planets, Moons, Rings, Halos) --- */
-const UBER_VS = `#version 300 es
-precision highp float;
-layout(location = 0) in vec3 aPosition;
-
-uniform mat4 uViewProj;
-uniform vec3 uBodyPos;
-uniform float uBodyRadius;
-uniform float uAxialTilt;
-uniform float uRotAngle;
-uniform float uPassScale;
-uniform float uFcoef;
-
-out vec3 vLocalPos;
-out vec3 vWorldNormal;
-out vec3 vWorldPos;
-out float vLogDepth;
-
-vec3 rotateY(vec3 p, float a) {
-  float c = cos(a), s = sin(a);
-  return vec3(c * p.x + s * p.z, p.y, -s * p.x + c * p.z);
-}
-
-vec3 rotateZ(vec3 p, float a) {
-  float c = cos(a), s = sin(a);
-  return vec3(c * p.x - s * p.y, s * p.x + c * p.y, p.z);
-}
-
-void main() {
-  vLocalPos = aPosition;
-  vec3 spun = rotateY(aPosition, uRotAngle);
-  vec3 tilted = rotateZ(spun, uAxialTilt);
-  vWorldNormal = normalize(tilted);
-
-  vec3 worldPos = uBodyPos + vWorldNormal * (uBodyRadius * uPassScale);
-  vWorldPos = worldPos;
-
-  gl_Position = uViewProj * vec4(worldPos, 1.0);
-  vLogDepth = 1.0 + gl_Position.w;
-  gl_Position.z = log2(max(1e-6, vLogDepth)) * uFcoef - 1.0;
-  gl_Position.z *= gl_Position.w;
-}`;
-
-const UBER_FS = `#version 300 es
-precision highp float;
-
-in vec3 vLocalPos;
-in vec3 vWorldNormal;
-in vec3 vWorldPos;
-in float vLogDepth;
-
-out vec4 fragColor;
-
-uniform int uBodyType;      // 0:Star, 1:Rocky, 2:Venus, 3:Earth, 4:GasGiant, 5:IceGiant, 6:Moon
-uniform int uRenderPass;    // 0:Surface, 1:Atmosphere/Corona Halo, 2:Planetary Rings
-uniform vec3 uBodyPos;
-uniform float uBodyRadius;
-uniform vec3 uSunPos;
-uniform vec3 uBaseColor;
-uniform vec3 uSecColor;
-uniform vec3 uAtmoColor;
-uniform float uAtmoStrength;
-uniform float uNoiseScale;
-uniform float uCloudDensity;
-uniform float uRingInner;
-uniform float uRingOuter;
-uniform float uTime;
-uniform float uFcoef;
-uniform vec3 uRingNormal;
-
+/* --- B. Shared GLSL Terrain Math & Unified Spherical Body Uber-Shader --- */
+const GLSL_TERRAIN_LIB = `
 float hash31(vec3 p) {
   p = fract(p * vec3(443.897, 441.423, 437.195));
   p += dot(p, p.yzx + 19.19);
   return fract((p.x + p.y) * p.z);
 }
-
 float noise3(vec3 p) {
   vec3 i = floor(p);
   vec3 f = fract(p);
@@ -1566,7 +1674,16 @@ float noise3(vec3 p) {
     f.z
   );
 }
-
+float fbm4(vec3 p) {
+  float v = 0.0;
+  float amp = 0.5;
+  for (int i = 0; i < 4; i++) {
+    v += amp * noise3(p);
+    p = p * 2.04 + vec3(13.1, 7.7, 5.3);
+    amp *= 0.5;
+  }
+  return v;
+}
 float fbm(vec3 p) {
   float v = 0.0;
   float amp = 0.5;
@@ -1577,13 +1694,121 @@ float fbm(vec3 p) {
   }
   return v;
 }
+float terrainHeight(vec3 P, int bodyType, float ns, float reliefAmp, float canyonDepth) {
+  if (reliefAmp <= 0.01) return 0.0;
+  float base = fbm4(P * ns);
+  float ridgeRaw = 1.0 - abs(noise3(P * ns * 2.35) * 2.0 - 1.0);
+  float ridge = ridgeRaw * ridgeRaw;
+  if (bodyType == 3) {
+    if (base <= 0.485) return 0.0;
+    float cont = (base - 0.485) / 0.515;
+    float mtnMask = smoothstep(0.14, 0.72, cont);
+    return (cont * 0.42 + ridge * mtnMask * 0.88) * reliefAmp;
+  }
+  float crater = abs(noise3(P * ns * 3.4) - 0.5) * 2.0;
+  float canyon = 0.0;
+  if (canyonDepth > 0.01) {
+    float rift = abs(noise3(P * 2.8 + vec3(3.1)) - 0.5);
+    float cMask = 1.0 - clamp(rift / 0.14, 0.0, 1.0);
+    canyon = cMask * cMask * (3.0 - 2.0 * cMask) * canyonDepth * 0.52;
+  }
+  return ((base - 0.43) * 0.58 + ridge * 0.68 + crater * 0.16 - canyon) * reliefAmp;
+}
+vec3 rotateY(vec3 p, float a) {
+  float c = cos(a), s = sin(a);
+  return vec3(c * p.x + s * p.z, p.y, -s * p.x + c * p.z);
+}
+vec3 rotateZ(vec3 p, float a) {
+  float c = cos(a), s = sin(a);
+  return vec3(c * p.x - s * p.y, s * p.x + c * p.y, p.z);
+}
+`;
 
+const UBER_VS = `#version 300 es
+precision highp float;
+precision highp int;
+layout(location = 0) in vec3 aPosition;
+
+uniform mat4 uViewProj;
+uniform vec3 uBodyPos;
+uniform float uBodyRadius;
+uniform float uAxialTilt;
+uniform float uRotAngle;
+uniform float uPassScale;
+uniform float uFcoef;
+uniform int uBodyType;
+uniform int uRenderPass;
+uniform float uNoiseScale;
+uniform float uReliefAmp;
+uniform float uCanyonDepth;
+
+out vec3 vLocalPos;
+out vec3 vWorldNormal;
+out vec3 vWorldPos;
+out float vLogDepth;
+${GLSL_TERRAIN_LIB}
+void main() {
+  vLocalPos = aPosition;
+  vec3 spun = rotateY(aPosition, uRotAngle);
+  vec3 tilted = rotateZ(spun, uAxialTilt);
+  vWorldNormal = normalize(tilted);
+
+  float disp = 0.0;
+  if (uRenderPass == 0 && uReliefAmp > 0.01) {
+    disp = terrainHeight(normalize(aPosition), uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+    if (uBodyType == 3) disp = max(0.0, disp);
+  }
+  vec3 worldPos = uBodyPos + vWorldNormal * (uBodyRadius * uPassScale + disp);
+  vWorldPos = worldPos;
+
+  gl_Position = uViewProj * vec4(worldPos, 1.0);
+  vLogDepth = 1.0 + gl_Position.w;
+  gl_Position.z = log2(max(1e-6, vLogDepth)) * uFcoef - 1.0;
+  gl_Position.z *= gl_Position.w;
+}`;
+
+const UBER_FS = `#version 300 es
+precision highp float;
+precision highp int;
+
+in vec3 vLocalPos;
+in vec3 vWorldNormal;
+in vec3 vWorldPos;
+in float vLogDepth;
+
+out vec4 fragColor;
+
+uniform int uBodyType;      // 0:Star, 1:Rocky, 2:Venus, 3:Earth, 4:GasGiant, 5:IceGiant, 6:Moon
+uniform int uRenderPass;    // 0:Surface, 1:Atmo/Corona Halo, 2:Rings, 3:Cloud Deck Shell
+uniform vec3 uBodyPos;
+uniform float uBodyRadius;
+uniform float uAxialTilt;
+uniform float uRotAngle;
+uniform vec3 uSunPos;
+uniform vec3 uBaseColor;
+uniform vec3 uSecColor;
+uniform vec3 uAtmoColor;
+uniform float uAtmoStrength;
+uniform float uNoiseScale;
+uniform float uCloudDensity;
+uniform float uRingInner;
+uniform float uRingOuter;
+uniform float uTime;
+uniform float uFcoef;
+uniform vec3 uRingNormal;
+uniform float uReliefAmp;
+uniform float uCanyonDepth;
+uniform float uPatchActive;
+uniform vec3 uPatchCenter;
+uniform float uPatchSpan;
+${GLSL_TERRAIN_LIB}
 void main() {
   gl_FragDepth = log2(max(1e-6, vLogDepth)) * uFcoef * 0.5;
 
   vec3 V = normalize(-vWorldPos);
   vec3 N = normalize(vWorldNormal);
   vec3 L = normalize(uSunPos - vWorldPos);
+  vec3 P = normalize(vLocalPos);
 
   /* --- PASS 2: RAY-INTERSECTED PLANETARY RINGS --- */
   if (uRenderPass == 2) {
@@ -1621,6 +1846,26 @@ void main() {
     return;
   }
 
+  /* --- PASS 3: DOUBLE-SIDED VOLUMETRIC CLOUD DECK SHELL --- */
+  if (uRenderPass == 3) {
+    float camDist = length(vWorldPos);
+    float nearFade = smoothstep(0.5, 5.5, camDist);
+    float clouds = fbm(P * (uNoiseScale * 1.45) + vec3(uTime * 0.025, 0.0, -uTime * 0.018));
+    float wisp = fbm(P * (uNoiseScale * 4.2) - vec3(uTime * 0.04, 0.0, uTime * 0.02));
+    float cVal = clouds * 0.72 + wisp * 0.28;
+    float thresh = mix(0.52, 0.34, clamp(uCloudDensity, 0.0, 1.0));
+    float alpha = smoothstep(thresh, thresh + 0.22, cVal) * uCloudDensity * 0.92 * nearFade;
+    if (alpha < 0.015) discard;
+
+    vec3 outN = normalize(vWorldPos - uBodyPos);
+    float cSun = smoothstep(-0.22, 0.78, dot(outN, L));
+    float twilight = smoothstep(-0.26, 0.14, dot(outN, L)) * (1.0 - smoothstep(0.0, 0.36, dot(outN, L)));
+    vec3 cloudCol = (uBodyType == 3) ? vec3(0.97, 0.98, 1.0) : mix(uAtmoColor, vec3(0.98, 0.94, 0.86), 0.35);
+    cloudCol = cloudCol * (0.05 + 0.95 * cSun) + vec3(0.96, 0.54, 0.30) * twilight * 0.32;
+    fragColor = vec4(cloudCol, alpha);
+    return;
+  }
+
   /* --- PASS 1: VOLUMETRIC CORONA / RAYLEIGH ATMOSPHERE HALO --- */
   if (uRenderPass == 1) {
     float rim = pow(1.0 - abs(dot(N, V)), 2.5);
@@ -1632,14 +1877,12 @@ void main() {
     } else {
       float sunFacing = smoothstep(-0.45, 0.70, dot(N, L));
       float halo = rim * sunFacing * uAtmoStrength;
-      fragColor = vec4(uAtmoColor * 1.05, halo * 0.62);
+      fragColor = vec4(uAtmoColor * 1.05, halo * 0.56);
       return;
     }
   }
 
   /* --- PASS 0: SURFACE SHADER --- */
-  vec3 P = normalize(vLocalPos);
-
   if (uBodyType == 0) {
     float n1 = fbm(P * uNoiseScale + vec3(uTime * 0.14, -uTime * 0.09, uTime * 0.11));
     float n2 = fbm(P * (uNoiseScale * 2.5) - vec3(uTime * 0.24));
@@ -1652,6 +1895,29 @@ void main() {
     return;
   }
 
+  // Hand off high-detail close cap cleanly to local 128x128 terrain patch
+  if (uPatchActive > 0.5) {
+    float ang = acos(clamp(dot(P, uPatchCenter), -1.0, 1.0));
+    if (ang < uPatchSpan * 0.93) discard;
+  }
+
+  // Compute subtle procedural bump normal for crisp orbital crater/mountain relief
+  float hCenter = 0.0;
+  if (uReliefAmp > 0.01) {
+    hCenter = terrainHeight(P, uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+    if (uBodyType != 3 || hCenter > 0.01) {
+      vec3 upRef = abs(P.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+      vec3 t1 = normalize(cross(upRef, P));
+      vec3 t2 = cross(P, t1);
+      float eps = 0.005;
+      float hx = terrainHeight(normalize(P + t1 * eps), uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+      float hy = terrainHeight(normalize(P + t2 * eps), uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+      float bumpScale = 1.6 / (uBodyRadius * eps);
+      vec3 localN = normalize(P - t1 * ((hx - hCenter) * bumpScale) - t2 * ((hy - hCenter) * bumpScale));
+      N = normalize(rotateZ(rotateY(localN, uRotAngle), uAxialTilt));
+    }
+  }
+
   float NdotL = dot(N, L);
   float diff = smoothstep(-0.14, 0.86, NdotL);
   float twilight = smoothstep(-0.24, 0.16, NdotL) * (1.0 - smoothstep(0.0, 0.38, NdotL));
@@ -1662,54 +1928,43 @@ void main() {
   vec3 emissive = vec3(0.0);
 
   if (uBodyType == 1) {
-    float h = fbm(P * uNoiseScale);
-    float craters = abs(noise3(P * uNoiseScale * 3.3) - 0.5) * 2.0;
-    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(0.24, 0.78, h * 0.8 + craters * 0.35));
+    float normH = clamp(hCenter / max(1.0, uReliefAmp), -0.4, 1.0);
+    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(-0.25, 0.55, normH));
+    surfaceCol = mix(surfaceCol, uBaseColor * 1.18, smoothstep(0.45, 0.95, normH));
     if (uAtmoStrength > 0.25) {
-      float pole = smoothstep(0.76, 0.92, abs(P.y) + (h - 0.5) * 0.18);
+      float pole = smoothstep(0.76, 0.92, abs(P.y) + normH * 0.16);
       surfaceCol = mix(surfaceCol, vec3(0.94, 0.96, 1.0), pole);
     }
   } else if (uBodyType == 2) {
-    vec3 swirlP = vec3(P.x + sin(P.y * 5.0 + uTime * 0.08) * 0.25, P.y * 2.2, P.z);
-    float bands = fbm(swirlP * uNoiseScale + vec3(uTime * 0.05, 0.0, 0.0));
-    surfaceCol = mix(uBaseColor, uSecColor, smoothstep(0.3, 0.75, bands));
+    float normH = clamp(hCenter / max(1.0, uReliefAmp), -0.4, 1.0);
+    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(-0.2, 0.7, normH));
   } else if (uBodyType == 3) {
-    float elev = fbm(P * uNoiseScale);
-    float detail = fbm(P * uNoiseScale * 3.8);
-    float landMask = smoothstep(0.47, 0.51, elev);
-
-    vec3 ocean = mix(uBaseColor * 0.60, uBaseColor * 1.40, smoothstep(0.2, 0.47, elev));
-    vec3 land = mix(uSecColor, vec3(0.70, 0.60, 0.38), smoothstep(0.52, 0.74, elev + detail * 0.15));
-    land = mix(land, vec3(0.90, 0.92, 0.96), smoothstep(0.72, 0.86, elev));
+    float elev = fbm4(P * uNoiseScale);
+    float landMask = smoothstep(0.482, 0.495, elev);
+    vec3 ocean = mix(uBaseColor * 0.55, vec3(0.08, 0.42, 0.68), smoothstep(0.24, 0.485, elev));
+    vec3 land = mix(uSecColor, vec3(0.56, 0.50, 0.34), smoothstep(0.5, 6.5, hCenter));
+    land = mix(land, vec3(0.92, 0.94, 0.97), smoothstep(6.2, 10.5, hCenter));
 
     surfaceCol = mix(ocean, land, landMask);
-    specMask = (1.0 - landMask) * 0.9;
+    specMask = (1.0 - landMask) * 0.92;
 
-    float ice = smoothstep(0.75, 0.87, abs(P.y) + (elev - 0.5) * 0.15);
+    float ice = smoothstep(0.76, 0.88, abs(P.y) + (elev - 0.5) * 0.14);
     surfaceCol = mix(surfaceCol, vec3(0.95, 0.98, 1.0), ice);
     specMask *= (1.0 - ice);
 
-    float clouds = fbm(P * (uNoiseScale * 1.45) + vec3(uTime * 0.03, 0.0, -uTime * 0.02));
-    float cloudAlpha = smoothstep(0.46, 0.72, clouds) * uCloudDensity;
-    surfaceCol = mix(surfaceCol, vec3(0.98, 0.99, 1.0), cloudAlpha);
-    specMask *= (1.0 - cloudAlpha);
-
-    // Subtle NASA night-side city lights on dark continents
     float nightMask = smoothstep(-0.02, -0.25, NdotL);
-    float cityNoise = noise3(P * 38.0) * noise3(P * 14.0);
-    float cities = smoothstep(0.52, 0.74, cityNoise) * landMask * (1.0 - ice) * (1.0 - cloudAlpha * 0.8);
-    emissive = vec3(1.0, 0.76, 0.38) * cities * nightMask * 0.95;
+    float cityNoise = noise3(P * 44.0) * noise3(P * 16.0);
+    float cities = smoothstep(0.52, 0.74, cityNoise) * landMask * (1.0 - ice);
+    emissive = vec3(1.0, 0.76, 0.38) * cities * nightMask * 0.90;
   } else if (uBodyType == 4) {
     float turb = fbm(P * uNoiseScale + vec3(uTime * 0.03, 0.0, 0.0));
     float lat = P.y * 11.0 + (turb - 0.5) * 2.2;
     float zone = sin(lat * 3.14159) * 0.5 + 0.5;
     float fineBand = cos(lat * 9.0 + turb * 4.0) * 0.5 + 0.5;
     surfaceCol = mix(uSecColor, uBaseColor, zone * 0.7 + fineBand * 0.3);
-
     if (uRingOuter < 0.1) {
       vec3 spotCenter = normalize(vec3(0.65, -0.34, 0.68));
-      float dSpot = length(P - spotCenter);
-      float vortex = smoothstep(0.24, 0.05, dSpot);
+      float vortex = smoothstep(0.24, 0.05, length(P - spotCenter));
       surfaceCol = mix(surfaceCol, vec3(0.88, 0.28, 0.14), vortex * 0.85);
     }
   } else if (uBodyType == 5) {
@@ -1717,22 +1972,15 @@ void main() {
     float band = sin(P.y * 16.0 + flow * 3.0) * 0.5 + 0.5;
     surfaceCol = mix(uSecColor, uBaseColor, 0.35 + 0.65 * band);
   } else {
-    // TYPE 6: Moons (Cratered regolith, fractured Europa ice lineae, Io volcanism, Titan haze)
-    float mNoise = fbm(P * uNoiseScale);
-    float ridges = abs(noise3(P * uNoiseScale * 2.8) - 0.5) * 2.0;
-    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(0.22, 0.80, mNoise * 0.65 + ridges * 0.45));
-    if (uCloudDensity > 0.3) {
-      float haze = fbm(P * 3.2 + vec3(uTime * 0.04, 0.0, 0.0));
-      surfaceCol = mix(surfaceCol, uAtmoColor, haze * uCloudDensity * 0.55);
-    }
+    float normH = clamp(hCenter / max(1.0, uReliefAmp), -0.4, 1.0);
+    surfaceCol = mix(uSecColor, uBaseColor, smoothstep(-0.25, 0.68, normH));
   }
 
   vec3 H = normalize(L + V);
-  float spec = pow(max(dot(N, H), 0.0), 48.0) * specMask * max(0.0, NdotL) * 0.42;
+  float spec = pow(max(dot(N, H), 0.0), 48.0) * specMask * max(0.0, NdotL) * 0.45;
   vec3 atmoRim = uAtmoColor * fresnel * uAtmoStrength * 0.85 * smoothstep(-0.42, 0.72, NdotL);
   vec3 sunsetRim = vec3(0.95, 0.48, 0.30) * twilight * uAtmoStrength * 0.28;
 
-  // Natural solar illumination with subtle deep-space fill (no neon bounce)
   vec3 sunTint = vec3(1.02, 0.98, 0.92);
   vec3 spaceFill = vec3(0.025, 0.028, 0.036);
   vec3 finalCol = surfaceCol * (spaceFill + sunTint * 0.98 * diff)
@@ -1742,6 +1990,184 @@ void main() {
                 + emissive;
 
   fragColor = vec4(finalCol, 1.0);
+}`;
+
+/* --- B2. High-Resolution Local Spherical Terrain Patch Shader (128x128 Close-Up) --- */
+const TERRAIN_VS = `#version 300 es
+precision highp float;
+precision highp int;
+layout(location = 0) in vec2 aUV;
+
+uniform mat4 uViewProj;
+uniform vec3 uBodyPos;
+uniform float uBodyRadius;
+uniform float uAxialTilt;
+uniform float uRotAngle;
+uniform float uFcoef;
+uniform int uBodyType;
+uniform float uNoiseScale;
+uniform float uReliefAmp;
+uniform float uCanyonDepth;
+uniform vec3 uPatchCenter;
+uniform vec3 uPatchRight;
+uniform vec3 uPatchUp;
+uniform float uPatchSpan;
+
+out vec2 vUV;
+out vec3 vLocalDir;
+out vec3 vWorldPos;
+out float vElev;
+out float vBaseSample;
+out float vLogDepth;
+${GLSL_TERRAIN_LIB}
+void main() {
+  vUV = aUV;
+  float r = length(aUV);
+  vec2 d2 = r > 1e-5 ? (aUV / r) : vec2(0.0);
+  float ang = pow(min(r, 1.0), 1.55) * uPatchSpan;
+  vec3 tangent = uPatchRight * d2.x + uPatchUp * d2.y;
+  vec3 P = normalize(uPatchCenter * cos(ang) + tangent * sin(ang));
+  vLocalDir = P;
+
+  float base = fbm4(P * uNoiseScale);
+  vBaseSample = base;
+  float h = terrainHeight(P, uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+  vElev = h;
+
+  float surfH = (uBodyType == 3) ? max(0.0, h) : h;
+  vec3 worldDir = normalize(rotateZ(rotateY(P, uRotAngle), uAxialTilt));
+  vec3 worldPos = uBodyPos + worldDir * (uBodyRadius + surfH);
+  vWorldPos = worldPos;
+
+  gl_Position = uViewProj * vec4(worldPos, 1.0);
+  vLogDepth = 1.0 + gl_Position.w;
+  gl_Position.z = (log2(max(1e-6, vLogDepth)) * uFcoef - 1.0) * gl_Position.w;
+}`;
+
+const TERRAIN_FS = `#version 300 es
+precision highp float;
+precision highp int;
+in vec2 vUV;
+in vec3 vLocalDir;
+in vec3 vWorldPos;
+in float vElev;
+in float vBaseSample;
+in float vLogDepth;
+
+out vec4 fragColor;
+
+uniform int uBodyType;
+uniform float uBodyRadius;
+uniform float uAxialTilt;
+uniform float uRotAngle;
+uniform vec3 uSunPos;
+uniform vec3 uBaseColor;
+uniform vec3 uSecColor;
+uniform vec3 uAtmoColor;
+uniform vec3 uAtmoSkyColor;
+uniform float uAtmoStrength;
+uniform float uAtmoDensity;
+uniform float uNoiseScale;
+uniform float uReliefAmp;
+uniform float uCanyonDepth;
+uniform float uTime;
+uniform float uFcoef;
+${GLSL_TERRAIN_LIB}
+void main() {
+  if (length(vUV) > 1.0) discard;
+  gl_FragDepth = log2(max(1e-6, vLogDepth)) * uFcoef * 0.5;
+
+  vec3 P = normalize(vLocalDir);
+  vec3 V = normalize(-vWorldPos);
+  vec3 L = normalize(uSunPos - vWorldPos);
+  float distToFrag = length(vWorldPos);
+
+  vec3 upRef = abs(P.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0);
+  vec3 t1 = normalize(cross(upRef, P));
+  vec3 t2 = cross(P, t1);
+
+  float isWater = (uBodyType == 3 && vElev <= 0.001) ? 1.0 : 0.0;
+  vec3 localN = P;
+  if (isWater > 0.5) {
+    // Subtle sunlit ocean wave ripples
+    float w1 = sin(dot(P, vec3(240.0, 180.0, -160.0)) + uTime * 1.4) * 0.015;
+    float w2 = cos(dot(P, vec3(-190.0, 220.0, 210.0)) - uTime * 1.1) * 0.015;
+    localN = normalize(P + t1 * w1 + t2 * w2);
+  } else {
+    float eps = 0.0012;
+    float h0 = terrainHeight(P, uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+    float hx = terrainHeight(normalize(P + t1 * eps), uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+    float hy = terrainHeight(normalize(P + t2 * eps), uBodyType, uNoiseScale, uReliefAmp, uCanyonDepth);
+    // Crisp micro-rock detail
+    float rock0 = noise3(P * 110.0) * 0.45 + noise3(P * 260.0) * 0.25;
+    float rockx = noise3(normalize(P + t1 * eps) * 110.0) * 0.45 + noise3(normalize(P + t1 * eps) * 260.0) * 0.25;
+    float rocky = noise3(normalize(P + t2 * eps) * 110.0) * 0.45 + noise3(normalize(P + t2 * eps) * 260.0) * 0.25;
+    float dHx = (hx - h0) + (rockx - rock0) * 0.42;
+    float dHy = (hy - h0) + (rocky - rock0) * 0.42;
+    float gradScale = 1.0 / (uBodyRadius * eps);
+    localN = normalize(P - t1 * (dHx * gradScale) - t2 * (dHy * gradScale));
+  }
+
+  vec3 N = normalize(rotateZ(rotateY(localN, uRotAngle), uAxialTilt));
+  float slope = 1.0 - clamp(dot(localN, P), 0.0, 1.0);
+  float microGrain = noise3(P * 140.0);
+
+  vec3 surfCol = uBaseColor;
+  float specMask = 0.0;
+  vec3 emissive = vec3(0.0);
+
+  if (uBodyType == 3) {
+    if (isWater > 0.5) {
+      float coastal = smoothstep(0.38, 0.485, vBaseSample);
+      surfCol = mix(uBaseColor * 0.55, vec3(0.08, 0.44, 0.68), coastal);
+      specMask = 0.92;
+    } else {
+      vec3 grass = mix(uSecColor * 0.88, vec3(0.28, 0.52, 0.24), microGrain * 0.7);
+      vec3 rock = mix(vec3(0.34, 0.32, 0.30), vec3(0.56, 0.52, 0.46), microGrain);
+      vec3 highland = mix(grass, vec3(0.54, 0.46, 0.34), smoothstep(2.0, 6.2, vElev));
+      surfCol = mix(highland, rock, smoothstep(0.08, 0.32, slope));
+      float snow = smoothstep(6.2, 9.5, vElev + (microGrain - 0.5) * 1.4) * (1.0 - smoothstep(0.32, 0.62, slope));
+      float polar = smoothstep(0.76, 0.88, abs(P.y));
+      surfCol = mix(surfCol, vec3(0.94, 0.96, 0.99), max(snow, polar));
+      float nightMask = smoothstep(-0.02, -0.25, dot(N, L));
+      float cityNoise = noise3(P * 44.0) * noise3(P * 16.0);
+      emissive = vec3(1.0, 0.76, 0.38) * smoothstep(0.54, 0.76, cityNoise) * (1.0 - slope * 2.0) * nightMask * 0.7;
+    }
+  } else if (uBodyType == 1) {
+    // Mars & Mercury: rust plains, dark stratified canyon cliffs, rocky ridges
+    float normH = clamp(vElev / max(1.0, uReliefAmp), -0.45, 1.0);
+    vec3 plainCol = mix(uSecColor * 0.85, uBaseColor, smoothstep(-0.35, 0.45, normH));
+    vec3 cliffCol = mix(uSecColor * 0.65, uBaseColor * 0.72, fract(vElev * 1.2 + microGrain * 0.25));
+    surfCol = mix(plainCol, cliffCol, smoothstep(0.08, 0.34, slope));
+    surfCol = mix(surfCol, uBaseColor * 1.16, smoothstep(0.50, 0.92, normH) * 0.6);
+    if (uAtmoStrength > 0.25) {
+      float pole = smoothstep(0.76, 0.92, abs(P.y) + normH * 0.14);
+      surfCol = mix(surfCol, vec3(0.94, 0.92, 0.90), pole);
+    }
+  } else if (uBodyType == 2) {
+    vec3 basalt = mix(uSecColor * 0.75, uBaseColor, smoothstep(-3.0, 5.0, vElev));
+    surfCol = mix(basalt, vec3(0.28, 0.18, 0.14), smoothstep(0.10, 0.35, slope));
+  } else {
+    float normH = clamp(vElev / max(1.0, uReliefAmp), -0.45, 1.0);
+    surfCol = mix(uSecColor * 0.85, uBaseColor, smoothstep(-0.3, 0.65, normH));
+    surfCol = mix(surfCol, uSecColor * 0.65, smoothstep(0.10, 0.35, slope));
+  }
+
+  float NdotL = dot(N, L);
+  float diff = smoothstep(-0.12, 0.88, NdotL);
+  vec3 H = normalize(L + V);
+  float spec = pow(max(dot(N, H), 0.0), 68.0) * specMask * max(0.0, NdotL) * 0.62;
+  vec3 litCol = surfCol * (vec3(0.03, 0.035, 0.045) + vec3(1.02, 0.98, 0.92) * diff) + vec3(1.0, 0.96, 0.88) * spec + emissive;
+
+  // Aerial perspective horizon haze inside planet atmosphere
+  if (uAtmoStrength > 0.08) {
+    float skyDay = smoothstep(-0.22, 0.45, dot(normalize(rotateZ(rotateY(P, uRotAngle), uAxialTilt)), L));
+    float hazeAmt = smoothstep(18.0, uBodyRadius * 0.72, distToFrag) * clamp(uAtmoStrength * (0.28 + 0.72 * uAtmoDensity), 0.0, 0.88);
+    vec3 fogCol = mix(uAtmoSkyColor * 0.10, uAtmoSkyColor * 0.92 + vec3(0.10), skyDay);
+    litCol = mix(litCol, fogCol, hazeAmt);
+  }
+
+  fragColor = vec4(litCol, 1.0);
 }`;
 
 /* --- C. Orbital Trajectories Shader --- */
@@ -1900,13 +2326,14 @@ layout(location = 1) in float aSize;
 uniform mat4 uViewProj;
 uniform float uFcoef;
 uniform float uDpr;
+uniform float uStarVis;
 
 out float vAlpha;
 
 void main() {
   float dist = length(aPos);
   float edgeFade = smoothstep(445.0, 210.0, dist) * smoothstep(2.5, 14.0, dist);
-  vAlpha = edgeFade * clamp(0.45 + aSize * 0.35, 0.45, 0.98);
+  vAlpha = edgeFade * clamp(0.45 + aSize * 0.35, 0.45, 0.98) * uStarVis;
   gl_Position = uViewProj * vec4(aPos, 1.0);
   float w = max(1e-4, 1.0 + gl_Position.w);
   gl_Position.z = (log2(w) * uFcoef - 1.0) * gl_Position.w;
@@ -1954,6 +2381,7 @@ void main() {
 
 const skyProg = createProgram(SKY_VS, SKY_FS);
 const uberProg = createProgram(UBER_VS, UBER_FS);
+const terrainProg = createProgram(TERRAIN_VS, TERRAIN_FS);
 const lineProg = createProgram(LINE_VS, LINE_FS);
 const gateProg = createProgram(GATE_VS, GATE_FS);
 const astProg  = createProgram(AST_VS, AST_FS);
@@ -1968,7 +2396,11 @@ const skyLoc = {
   uTanHalfFov: gl.getUniformLocation(skyProg, "uTanHalfFov"),
   uSunDir: gl.getUniformLocation(skyProg, "uSunDir"),
   uWarpFactor: gl.getUniformLocation(skyProg, "uWarpFactor"),
-  uVelDir: gl.getUniformLocation(skyProg, "uVelDir")
+  uVelDir: gl.getUniformLocation(skyProg, "uVelDir"),
+  uAtmoCenter: gl.getUniformLocation(skyProg, "uAtmoCenter"),
+  uAtmoSkyColor: gl.getUniformLocation(skyProg, "uAtmoSkyColor"),
+  uAtmoDensity: gl.getUniformLocation(skyProg, "uAtmoDensity"),
+  uCloudMist: gl.getUniformLocation(skyProg, "uCloudMist")
 };
 
 const uberLoc = {
@@ -1991,7 +2423,37 @@ const uberLoc = {
   uRingInner: gl.getUniformLocation(uberProg, "uRingInner"),
   uRingOuter: gl.getUniformLocation(uberProg, "uRingOuter"),
   uTime: gl.getUniformLocation(uberProg, "uTime"),
-  uRingNormal: gl.getUniformLocation(uberProg, "uRingNormal")
+  uRingNormal: gl.getUniformLocation(uberProg, "uRingNormal"),
+  uReliefAmp: gl.getUniformLocation(uberProg, "uReliefAmp"),
+  uCanyonDepth: gl.getUniformLocation(uberProg, "uCanyonDepth"),
+  uPatchActive: gl.getUniformLocation(uberProg, "uPatchActive"),
+  uPatchCenter: gl.getUniformLocation(uberProg, "uPatchCenter"),
+  uPatchSpan: gl.getUniformLocation(uberProg, "uPatchSpan")
+};
+
+const terrainLoc = {
+  uViewProj: gl.getUniformLocation(terrainProg, "uViewProj"),
+  uBodyPos: gl.getUniformLocation(terrainProg, "uBodyPos"),
+  uBodyRadius: gl.getUniformLocation(terrainProg, "uBodyRadius"),
+  uAxialTilt: gl.getUniformLocation(terrainProg, "uAxialTilt"),
+  uRotAngle: gl.getUniformLocation(terrainProg, "uRotAngle"),
+  uFcoef: gl.getUniformLocation(terrainProg, "uFcoef"),
+  uBodyType: gl.getUniformLocation(terrainProg, "uBodyType"),
+  uNoiseScale: gl.getUniformLocation(terrainProg, "uNoiseScale"),
+  uReliefAmp: gl.getUniformLocation(terrainProg, "uReliefAmp"),
+  uCanyonDepth: gl.getUniformLocation(terrainProg, "uCanyonDepth"),
+  uPatchCenter: gl.getUniformLocation(terrainProg, "uPatchCenter"),
+  uPatchRight: gl.getUniformLocation(terrainProg, "uPatchRight"),
+  uPatchUp: gl.getUniformLocation(terrainProg, "uPatchUp"),
+  uPatchSpan: gl.getUniformLocation(terrainProg, "uPatchSpan"),
+  uSunPos: gl.getUniformLocation(terrainProg, "uSunPos"),
+  uBaseColor: gl.getUniformLocation(terrainProg, "uBaseColor"),
+  uSecColor: gl.getUniformLocation(terrainProg, "uSecColor"),
+  uAtmoColor: gl.getUniformLocation(terrainProg, "uAtmoColor"),
+  uAtmoSkyColor: gl.getUniformLocation(terrainProg, "uAtmoSkyColor"),
+  uAtmoStrength: gl.getUniformLocation(terrainProg, "uAtmoStrength"),
+  uAtmoDensity: gl.getUniformLocation(terrainProg, "uAtmoDensity"),
+  uTime: gl.getUniformLocation(terrainProg, "uTime")
 };
 
 const lineLoc = {
@@ -2026,7 +2488,8 @@ const astLoc = {
 const pStarLoc = {
   uViewProj: gl.getUniformLocation(pStarProg, "uViewProj"),
   uFcoef: gl.getUniformLocation(pStarProg, "uFcoef"),
-  uDpr: gl.getUniformLocation(pStarProg, "uDpr")
+  uDpr: gl.getUniformLocation(pStarProg, "uDpr"),
+  uStarVis: gl.getUniformLocation(pStarProg, "uStarVis")
 };
 
 const dustLoc = {
@@ -2047,12 +2510,12 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.ST
 gl.enableVertexAttribArray(0);
 gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
 
-// 5b. Unit Sphere Geometry (Uber-Shader)
+// 5b. High-Density Unit Sphere Geometry (Uber-Shader) & 128x128 Local Terrain Patch
 const sphereVAO = gl.createVertexArray();
 gl.bindVertexArray(sphereVAO);
 let sphereIndexCount = 0;
 {
-  const latBands = 56, lonBands = 56;
+  const latBands = 96, lonBands = 96;
   const verts = new Float32Array((latBands + 1) * (lonBands + 1) * 3);
   const indices = new Uint16Array(latBands * lonBands * 6);
   let vPtr = 0;
@@ -2083,6 +2546,41 @@ let sphereIndexCount = 0;
   gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
   const ibo = gl.createBuffer();
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+}
+
+const terrainVAO = gl.createVertexArray();
+gl.bindVertexArray(terrainVAO);
+let terrainIndexCount = 0;
+{
+  const segs = 128;
+  const verts = new Float32Array((segs + 1) * (segs + 1) * 2);
+  const indices = new Uint32Array(segs * segs * 6);
+  let vp = 0;
+  for (let y = 0; y <= segs; y++) {
+    const v = (y / segs) * 2.0 - 1.0;
+    for (let x = 0; x <= segs; x++) {
+      verts[vp++] = (x / segs) * 2.0 - 1.0;
+      verts[vp++] = v;
+    }
+  }
+  let ip = 0;
+  for (let y = 0; y < segs; y++) {
+    for (let x = 0; x < segs; x++) {
+      const a = y * (segs + 1) + x;
+      const b = a + segs + 1;
+      indices[ip++] = a; indices[ip++] = b; indices[ip++] = a + 1;
+      indices[ip++] = b; indices[ip++] = b + 1; indices[ip++] = a + 1;
+    }
+  }
+  terrainIndexCount = indices.length;
+  const tvbo = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, tvbo);
+  gl.bufferData(gl.ARRAY_BUFFER, verts, gl.STATIC_DRAW);
+  gl.enableVertexAttribArray(0);
+  gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+  const tibo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, tibo);
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 }
 
@@ -2195,12 +2693,12 @@ let astIndexCount = 0;
   const instOrbit = new Float32Array(ASTEROID_COUNT * 4);
   const instProps = new Float32Array(ASTEROID_COUNT * 4);
   for (let i = 0; i < ASTEROID_COUNT; i++) {
-    instOrbit[i * 4 + 0] = 12200.0 + Math.random() * 3000.0; // Belt band between Mars & Jupiter
+    instOrbit[i * 4 + 0] = 20600.0 + Math.random() * 5000.0; // Belt band between Mars & Jupiter
     instOrbit[i * 4 + 1] = Math.random() * Math.PI * 2.0;
-    instOrbit[i * 4 + 2] = 0.002 + Math.random() * 0.003;
-    instOrbit[i * 4 + 3] = (Math.random() - 0.5) * 420.0;
+    instOrbit[i * 4 + 2] = 0.0018 + Math.random() * 0.0026;
+    instOrbit[i * 4 + 3] = (Math.random() - 0.5) * 680.0;
 
-    instProps[i * 4 + 0] = 7.0 + Math.pow(Math.random(), 2.2) * 20.0; // Scale
+    instProps[i * 4 + 0] = 10.0 + Math.pow(Math.random(), 2.2) * 28.0; // Scale
     instProps[i * 4 + 1] = (Math.random() - 0.5) * 1.4;
     instProps[i * 4 + 2] = Math.random();
     instProps[i * 4 + 3] = Math.random();
@@ -2259,7 +2757,7 @@ let toastText = "";
 let toastTimer = 0.0;
 
 function getGateRadius(b) {
-  return Math.max(9.0, Math.min(28.0, b.radius * 0.22));
+  return Math.max(18.0, Math.min(48.0, b.radius * 0.16));
 }
 
 function updateCelestialOrbits(t) {
@@ -2279,24 +2777,25 @@ function updateCelestialOrbits(t) {
       bodyPos64[idx + 2] = bodyPos64[pIdx + 2] + Math.sin(angle) * b.orbitRadius;
     }
 
-    // Place orbital checkpoint gate outside planet/moon (proportionally sized smaller than body)
-    const gateDist = b.radius * 1.55 + 24.0;
+    // Place orbital checkpoint gate outside planet/moon atmosphere
+    const gateDist = b.radius * 1.48 + 40.0;
     const gAng = angle + 0.35;
     gatePos64[idx + 0] = bodyPos64[idx + 0] + Math.cos(gAng) * gateDist;
-    gatePos64[idx + 1] = bodyPos64[idx + 1] + Math.sin(gAng * 1.5) * (b.radius * 0.18);
+    gatePos64[idx + 1] = bodyPos64[idx + 1] + Math.sin(gAng * 1.5) * (b.radius * 0.14);
     gatePos64[idx + 2] = bodyPos64[idx + 2] + Math.sin(gAng) * gateDist;
   }
 }
 updateCelestialOrbits(0);
+prevBodyPos64.set(bodyPos64);
 
-// Spawn in dramatic low Earth orbit facing Earth, Luna, and the Sun!
+// Spawn in dramatic low Earth orbit facing Earth, clouds, Luna, and the Sun!
 {
   const eIdx = 3 * 3;
-  shipPos64[0] = bodyPos64[eIdx + 0] + 150.0;
-  shipPos64[1] = bodyPos64[eIdx + 1] + 50.0;
-  shipPos64[2] = bodyPos64[eIdx + 2] + 175.0;
+  shipPos64[0] = bodyPos64[eIdx + 0] + 490.0;
+  shipPos64[1] = bodyPos64[eIdx + 1] + 150.0;
+  shipPos64[2] = bodyPos64[eIdx + 2] + 560.0;
   lookAtQuat(shipQuat, shipPos64[0], shipPos64[1], shipPos64[2],
-             bodyPos64[eIdx + 0] - 25.0, bodyPos64[eIdx + 1] - 8.0, bodyPos64[eIdx + 2] - 15.0);
+             bodyPos64[eIdx + 0] - 45.0, bodyPos64[eIdx + 1] - 18.0, bodyPos64[eIdx + 2] - 25.0);
 }
 
 // Build Field Log & Mission UI
@@ -2717,10 +3216,65 @@ let pitchRate = 0.0, yawRate = 0.0, rollRate = 0.0;
 let warpVisualFactor = 0.0;
 let orbitPhaseAngle = 0.0;
 
-const FAR_PLANE = 280000.0;
+const FAR_PLANE = 440000.0;
 const FCOEF = 2.0 / Math.log2(FAR_PLANE + 1.0);
 
 function stepPhysics(dt) {
+  // Planetary & Lunar Sphere of Influence (SOI) Gravity Frame-Locking
+  // Keeps stopped or orbiting ships bound to the local world's path; boost away anytime to break free.
+  let soiIdx = -1;
+  let soiLock = 0.0;
+  let soiScore = -1.0;
+  for (let i = 1; i < BODY_COUNT; i++) {
+    const b = ALL_BODIES[i];
+    const idx = i * 3;
+    const dPrev = Math.hypot(
+      shipPos64[0] - prevBodyPos64[idx + 0],
+      shipPos64[1] - prevBodyPos64[idx + 1],
+      shipPos64[2] - prevBodyPos64[idx + 2]
+    );
+    const aglPrev = Math.max(0.0, dPrev - b.radius);
+    const fullLockAGL = b.radius * 1.65 + 140.0;
+    const outerSoiAGL = b.radius * 3.4 + 300.0;
+    if (aglPrev < outerSoiAGL) {
+      let lock = 1.0;
+      if (aglPrev > fullLockAGL) {
+        const t = 1.0 - (aglPrev - fullLockAGL) / (outerSoiAGL - fullLockAGL);
+        lock = t * t * (3.0 - 2.0 * t);
+      }
+      const score = lock + (lock >= 0.999 ? (1.0 / (1.0 + aglPrev / Math.max(40.0, b.radius))) : 0.0);
+      if (score > soiScore) {
+        soiScore = score;
+        soiLock = lock;
+        soiIdx = i;
+      }
+    }
+  }
+  gravityBodyIdx = soiIdx;
+  gravityLock = soiLock;
+
+  if (soiIdx >= 0 && soiLock > 0.0001 && !warpActive) {
+    const sIdx = soiIdx * 3;
+    const dBx = (bodyPos64[sIdx + 0] - prevBodyPos64[sIdx + 0]) * soiLock;
+    const dBy = (bodyPos64[sIdx + 1] - prevBodyPos64[sIdx + 1]) * soiLock;
+    const dBz = (bodyPos64[sIdx + 2] - prevBodyPos64[sIdx + 2]) * soiLock;
+    shipPos64[0] += dBx;
+    shipPos64[1] += dBy;
+    shipPos64[2] += dBz;
+    for (let i = 0; i < PSTAR_COUNT; i++) {
+      const pIdx = i * 3;
+      pStarOrigin64[pIdx + 0] += dBx;
+      pStarOrigin64[pIdx + 1] += dBy;
+      pStarOrigin64[pIdx + 2] += dBz;
+    }
+    for (let i = 0; i < DUST_COUNT; i++) {
+      const pIdx = i * 3;
+      dustOrigin64[pIdx + 0] += dBx;
+      dustOrigin64[pIdx + 1] += dBy;
+      dustOrigin64[pIdx + 2] += dBz;
+    }
+  }
+
   updateBasisVectorsFromQuat(shipQuat);
 
   const keyRoll = (keys["KeyE"] || touchHold.rollR ? 1.0 : 0.0) - (keys["KeyQ"] || touchHold.rollL ? 1.0 : 0.0);
@@ -2772,15 +3326,15 @@ function stepPhysics(dt) {
     const dy = bodyPos64[tIdx + 1] - shipPos64[1];
     const dz = bodyPos64[tIdx + 2] - shipPos64[2];
     const dist = Math.hypot(dx, dy, dz);
-    const standoff = tBody.radius * 2.4 + 55.0;
+    const standoff = tBody.radius * 2.25 + 95.0;
     const remDist = Math.max(0.0, dist - standoff);
 
-    if (remDist < 14.0) {
+    if (remDist < 18.0) {
       setWarp(false);
       setOrbit(true);
     } else {
       const dirX = dx / dist, dirY = dy / dist, dirZ = dz / dist;
-      const desiredSpeed = Math.min(1150.0, Math.max(55.0, remDist * 0.48));
+      const desiredSpeed = Math.min(1850.0, Math.max(80.0, remDist * 0.52));
       const blend = 1.0 - Math.exp(-2.2 * dt);
       shipVel64[0] += (dirX * desiredSpeed - shipVel64[0]) * blend;
       shipVel64[1] += (dirY * desiredSpeed - shipVel64[1]) * blend;
@@ -2789,10 +3343,10 @@ function stepPhysics(dt) {
   } else if (orbitActive) {
     const rx = shipPos64[0] - bodyPos64[tIdx + 0];
     const rz = shipPos64[2] - bodyPos64[tIdx + 2];
-    orbitPhaseAngle = Math.atan2(rz, rx) + dt * 0.16;
-    const orbitR = tBody.radius * 2.25 + 42.0;
+    orbitPhaseAngle = Math.atan2(rz, rx) + dt * 0.14;
+    const orbitR = tBody.radius * 2.1 + 85.0;
     const goalX = bodyPos64[tIdx + 0] + Math.cos(orbitPhaseAngle) * orbitR;
-    const goalY = bodyPos64[tIdx + 1] + Math.sin(orbitPhaseAngle * 2.0) * (tBody.radius * 0.25);
+    const goalY = bodyPos64[tIdx + 1] + Math.sin(orbitPhaseAngle * 2.0) * (tBody.radius * 0.22);
     const goalZ = bodyPos64[tIdx + 2] + Math.sin(orbitPhaseAngle) * orbitR;
 
     shipVel64[0] = (goalX - shipPos64[0]) * 1.8;
@@ -2813,13 +3367,14 @@ function stepPhysics(dt) {
       updateBasisVectorsFromQuat(shipQuat);
     }
   } else {
-    let maxAccel = boosting ? 240.0 : 68.0;
-    const surfDist = Math.max(12.0, Math.hypot(
+    let maxAccel = boosting ? 280.0 : 78.0;
+    const surfDist = Math.max(8.0, Math.hypot(
       bodyPos64[tIdx + 0] - shipPos64[0],
       bodyPos64[tIdx + 1] - shipPos64[1],
       bodyPos64[tIdx + 2] - shipPos64[2]
     ) - tBody.radius);
-    const proxScale = Math.min(1.65, Math.max(0.38, surfDist / 260.0));
+    const proxDist = Math.max(8.0, Math.min(surfDist, nearestAGL));
+    const proxScale = Math.min(2.2, Math.max(0.24, (proxDist + 8.0) / 175.0));
     maxAccel *= proxScale;
 
     const ax = (vecForward[0] * effectiveFwd + vecRight[0] * strafeRight + vecUp[0] * strafeUp) * maxAccel;
@@ -2850,8 +3405,10 @@ function stepPhysics(dt) {
   shipPos64[1] += shipVel64[1] * dt;
   shipPos64[2] += shipVel64[2] * dt;
 
-  // Collision Standoff + Discovery Scanner + Flyby Checkpoint Gates
+  // Terrain-Following Surface Cushion + Discovery Scanner + Flyby Checkpoint Gates
   const scanningKey = keys["KeyX"] || scanHold;
+  let bestIdx = 0;
+  let bestAGL = 1e18;
   for (let i = 0; i < BODY_COUNT; i++) {
     const b = ALL_BODIES[i];
     const idx = i * 3;
@@ -2859,12 +3416,79 @@ function stepPhysics(dt) {
     const dy = shipPos64[1] - bodyPos64[idx + 1];
     const dz = shipPos64[2] - bodyPos64[idx + 2];
     const d = Math.hypot(dx, dy, dz);
-    const minSep = b.radius * 1.13;
-    if (d < minSep && d > 1e-5) {
-      const push = minSep / d;
-      shipPos64[0] = bodyPos64[idx + 0] + dx * push;
-      shipPos64[1] = bodyPos64[idx + 1] + dy * push;
-      shipPos64[2] = bodyPos64[idx + 2] + dz * push;
+    let agl = Math.max(0.0, d - b.radius);
+
+    if (b.reliefAmp > 0.01 && d < b.radius * 1.8 && d > 1e-5) {
+      const rotAng = simTime * b.rotationSpeed;
+      worldRelToBodyLocal(tempVec3, dx, dy, dz, b.axialTilt, rotAng);
+      let groundH = terrainHeightJS(tempVec3[0], tempVec3[1], tempVec3[2], b);
+      if (b.type === 3) groundH = Math.max(0.0, groundH);
+      agl = Math.max(0.0, d - (b.radius + groundH));
+
+      // Look ahead slightly along forward tangent to anticipate cliffs & peaks
+      const ux = dx / d, uy = dy / d, uz = dz / d;
+      const fdot = vecForward[0] * ux + vecForward[1] * uy + vecForward[2] * uz;
+      let tx = vecForward[0] - fdot * ux;
+      let ty = vecForward[1] - fdot * uy;
+      let tz = vecForward[2] - fdot * uz;
+      const tLen = Math.hypot(tx, ty, tz);
+      let aheadH = groundH;
+      if (tLen > 1e-4) {
+        const step = (0.022 * d) / tLen;
+        worldRelToBodyLocal(tempVec3, dx + tx * step, dy + ty * step, dz + tz * step, b.axialTilt, rotAng);
+        aheadH = terrainHeightJS(tempVec3[0], tempVec3[1], tempVec3[2], b);
+        if (b.type === 3) aheadH = Math.max(0.0, aheadH);
+      }
+
+      const localFloor = b.radius + groundH + 3.2;
+      const aheadFloor = b.radius + aheadH + 3.2;
+      const cushionTop = Math.max(localFloor, aheadFloor) + 6.5;
+
+      if (d < cushionTop) {
+        const vRad = shipVel64[0] * ux + shipVel64[1] * uy + shipVel64[2] * uz;
+        const penetr = Math.min(1.0, (cushionTop - d) / 6.5);
+        if (vRad < 0.0) {
+          const dampRad = vRad * (1.0 - Math.min(1.0, penetr * 0.85));
+          const deltaRad = dampRad - vRad;
+          shipVel64[0] += ux * deltaRad;
+          shipVel64[1] += uy * deltaRad;
+          shipVel64[2] += uz * deltaRad;
+        }
+        const liftSpeed = penetr * (6.0 + currentSpeed * 0.24);
+        const curRad = shipVel64[0] * ux + shipVel64[1] * uy + shipVel64[2] * uz;
+        if (curRad < liftSpeed) {
+          const addUp = (liftSpeed - curRad) * Math.min(1.0, dt * 7.5);
+          shipVel64[0] += ux * addUp;
+          shipVel64[1] += uy * addUp;
+          shipVel64[2] += uz * addUp;
+        }
+        if (d < localFloor) {
+          const push = localFloor / d;
+          shipPos64[0] = bodyPos64[idx + 0] + dx * push;
+          shipPos64[1] = bodyPos64[idx + 1] + dy * push;
+          shipPos64[2] = bodyPos64[idx + 2] + dz * push;
+        }
+      }
+    } else {
+      const minSep = b.radius * 1.045;
+      if (d < minSep && d > 1e-5) {
+        const ux = dx / d, uy = dy / d, uz = dz / d;
+        const vRad = shipVel64[0] * ux + shipVel64[1] * uy + shipVel64[2] * uz;
+        if (vRad < 0.0) {
+          shipVel64[0] -= ux * vRad;
+          shipVel64[1] -= uy * vRad;
+          shipVel64[2] -= uz * vRad;
+        }
+        const push = minSep / d;
+        shipPos64[0] = bodyPos64[idx + 0] + dx * push;
+        shipPos64[1] = bodyPos64[idx + 1] + dy * push;
+        shipPos64[2] = bodyPos64[idx + 2] + dz * push;
+      }
+    }
+
+    if (agl < bestAGL) {
+      bestAGL = agl;
+      bestIdx = i;
     }
 
     if (ringsEnabled && !b.ringCleared) {
@@ -2879,13 +3503,47 @@ function stepPhysics(dt) {
     }
 
     if (!b.discovered) {
-      const maxScanRange = scanningKey ? b.radius * 7.5 + 160.0 : b.radius * 3.8 + 90.0;
+      const maxScanRange = scanningKey ? b.radius * 6.5 + 220.0 : b.radius * 3.5 + 120.0;
       if (d < maxScanRange) {
         const rate = scanningKey ? 0.72 : 0.28;
         b.scanProgress = Math.min(1.0, b.scanProgress + dt * rate);
         if (b.scanProgress >= 1.0) completeDiscovery(i);
       }
     }
+  }
+
+  nearestBodyIdx = bestIdx;
+  nearestAGL = bestAGL;
+  const nb = ALL_BODIES[nearestBodyIdx];
+  const atmoThickness = nb.radius * (nb.atmoHeight || 0.25);
+  nearestAtmoDensity = (nb.type !== 0 && nb.atmoStrength > 0.04 && nearestAGL < atmoThickness)
+    ? Math.max(0.0, Math.min(1.0, Math.pow(1.0 - nearestAGL / atmoThickness, 1.35)))
+    : 0.0;
+  cloudMistFactor = 0.0;
+  if (nb.cloudAlt > 0.1 && nb.cloudDensity > 0.05) {
+    const cloudH = nb.radius * (nb.cloudAlt - 1.0);
+    const cloudDist = Math.abs(nearestAGL - cloudH);
+    if (cloudDist < 5.5) {
+      cloudMistFactor = (1.0 - cloudDist / 5.5) * nb.cloudDensity;
+    }
+  }
+
+  // Surface & Atmospheric Co-Rotation: planet/moon spin carries nearby stopped ship along with surface landmarks
+  const surfSpinLock = nb.reliefAmp > 0.01
+    ? Math.max(0.0, Math.min(1.0, 1.0 - nearestAGL / (nb.radius * 0.42)))
+    : 0.0;
+  const spinLock = Math.max(Math.min(1.0, nearestAtmoDensity * 1.85), surfSpinLock);
+  if (spinLock > 0.02 && nb.type !== 0 && !warpActive && !orbitActive) {
+    const nbIdx = nearestBodyIdx * 3;
+    const rx = shipPos64[0] - bodyPos64[nbIdx + 0];
+    const ry = shipPos64[1] - bodyPos64[nbIdx + 1];
+    const rz = shipPos64[2] - bodyPos64[nbIdx + 2];
+    const ax = -Math.sin(nb.axialTilt);
+    const ay = Math.cos(nb.axialTilt);
+    const dTheta = nb.rotationSpeed * dt * spinLock;
+    shipPos64[0] += dTheta * (ay * rz);
+    shipPos64[1] += dTheta * (-ax * rz);
+    shipPos64[2] += dTheta * (ax * ry - ay * rx);
   }
 
   // Update 3D Parallax Moving Stars (Zero Allocation)
@@ -2990,7 +3648,7 @@ function renderScene(timeSec) {
   gl.depthMask(true);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-  // 1. Deep Black Space & Pinpoint Starfield Skybox
+  // 1. Deep Black Space, Starfield & Atmospheric Rayleigh Skybox
   gl.disable(gl.DEPTH_TEST);
   gl.useProgram(skyProg);
   gl.bindVertexArray(quadVAO);
@@ -3012,6 +3670,19 @@ function renderScene(timeSec) {
     tempVec3.set(vecForward);
   }
   gl.uniform3fv(skyLoc.uVelDir, tempVec3);
+
+  const nb = ALL_BODIES[nearestBodyIdx];
+  const nbIdx = nearestBodyIdx * 3;
+  atmoCenter32[0] = bodyPos64[nbIdx + 0] - shipPos64[0];
+  atmoCenter32[1] = bodyPos64[nbIdx + 1] - shipPos64[1];
+  atmoCenter32[2] = bodyPos64[nbIdx + 2] - shipPos64[2];
+  atmoSky32[0] = nb.skyColor[0];
+  atmoSky32[1] = nb.skyColor[1];
+  atmoSky32[2] = nb.skyColor[2];
+  gl.uniform3fv(skyLoc.uAtmoCenter, atmoCenter32);
+  gl.uniform3fv(skyLoc.uAtmoSkyColor, atmoSky32);
+  gl.uniform1f(skyLoc.uAtmoDensity, nearestAtmoDensity);
+  gl.uniform1f(skyLoc.uCloudMist, cloudMistFactor);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
   // 2. Subtle Planetary Orbital Arcs & Flyby Checkpoint Rings
@@ -3093,6 +3764,29 @@ function renderScene(timeSec) {
   gl.uniform1f(astLoc.uFcoef, FCOEF);
   gl.drawElementsInstanced(gl.TRIANGLES, astIndexCount, gl.UNSIGNED_SHORT, 0, ASTEROID_COUNT);
 
+  // Compute close-up local 128x128 terrain patch frame if skimming near a solid world
+  const patchActive = (nb.reliefAmp > 0.01 && nearestAGL < nb.radius * 0.65);
+  let patchSpan = 0.42;
+  if (patchActive) {
+    worldRelToBodyLocal(patchCenter32, -atmoCenter32[0], -atmoCenter32[1], -atmoCenter32[2],
+                        nb.axialTilt, timeSec * nb.rotationSpeed);
+    const rx = Math.abs(patchCenter32[1]) < 0.85 ? 0.0 : 1.0;
+    const ry = Math.abs(patchCenter32[1]) < 0.85 ? 1.0 : 0.0;
+    // right = normalize(cross(ref, center))
+    let r0 = ry * patchCenter32[2];
+    let r1 = -rx * patchCenter32[2];
+    let r2 = rx * patchCenter32[1] - ry * patchCenter32[0];
+    const rInv = 1.0 / (Math.hypot(r0, r1, r2) || 1.0);
+    patchRight32[0] = r0 * rInv;
+    patchRight32[1] = r1 * rInv;
+    patchRight32[2] = r2 * rInv;
+    // up = cross(right, center) -> guarantees (Up x Right) == +Center for CCW front culling
+    patchUp32[0] = patchRight32[1] * patchCenter32[2] - patchRight32[2] * patchCenter32[1];
+    patchUp32[1] = patchRight32[2] * patchCenter32[0] - patchRight32[0] * patchCenter32[2];
+    patchUp32[2] = patchRight32[0] * patchCenter32[1] - patchRight32[1] * patchCenter32[0];
+    patchSpan = Math.min(0.62, Math.max(0.30, 0.24 + (nearestAGL / nb.radius) * 0.65));
+  }
+
   // 4. Solid Planetary, Solar & Moon Surfaces (Uber-Shader Pass 0)
   gl.useProgram(uberProg);
   gl.bindVertexArray(sphereVAO);
@@ -3100,6 +3794,8 @@ function renderScene(timeSec) {
   gl.uniform3fv(uberLoc.uSunPos, sunRelPos32);
   gl.uniform1f(uberLoc.uFcoef, FCOEF);
   gl.uniform1f(uberLoc.uTime, timeSec);
+  gl.uniform3fv(uberLoc.uPatchCenter, patchCenter32);
+  gl.uniform1f(uberLoc.uPatchSpan, patchSpan);
 
   for (let i = 0; i < BODY_COUNT; i++) {
     const b = ALL_BODIES[i];
@@ -3123,12 +3819,49 @@ function renderScene(timeSec) {
     gl.uniform1f(uberLoc.uCloudDensity, b.cloudDensity);
     gl.uniform1f(uberLoc.uRingInner, b.ringInner);
     gl.uniform1f(uberLoc.uRingOuter, b.ringOuter);
+    gl.uniform1f(uberLoc.uReliefAmp, b.reliefAmp);
+    gl.uniform1f(uberLoc.uCanyonDepth, b.canyonDepth);
+    gl.uniform1f(uberLoc.uPatchActive, (patchActive && i === nearestBodyIdx) ? 1.0 : 0.0);
     gl.drawElements(gl.TRIANGLES, sphereIndexCount, gl.UNSIGNED_SHORT, 0);
   }
 
-  // 5. Volumetric Corona, Rayleigh Halos & Intersected Rings (Pass 1 & 2)
+  // 4b. High-Resolution Local 128x128 3D Surface Patch Under Ship
+  if (patchActive) {
+    gl.useProgram(terrainProg);
+    gl.bindVertexArray(terrainVAO);
+    gl.uniformMatrix4fv(terrainLoc.uViewProj, false, viewProjMat);
+    gl.uniform3fv(terrainLoc.uBodyPos, atmoCenter32);
+    gl.uniform1f(terrainLoc.uBodyRadius, nb.radius);
+    gl.uniform1f(terrainLoc.uAxialTilt, nb.axialTilt);
+    gl.uniform1f(terrainLoc.uRotAngle, timeSec * nb.rotationSpeed);
+    gl.uniform1f(terrainLoc.uFcoef, FCOEF);
+    gl.uniform1i(terrainLoc.uBodyType, nb.type);
+    gl.uniform1f(terrainLoc.uNoiseScale, nb.noiseScale);
+    gl.uniform1f(terrainLoc.uReliefAmp, nb.reliefAmp);
+    gl.uniform1f(terrainLoc.uCanyonDepth, nb.canyonDepth);
+    gl.uniform3fv(terrainLoc.uPatchCenter, patchCenter32);
+    gl.uniform3fv(terrainLoc.uPatchRight, patchRight32);
+    gl.uniform3fv(terrainLoc.uPatchUp, patchUp32);
+    gl.uniform1f(terrainLoc.uPatchSpan, patchSpan);
+    gl.uniform3fv(terrainLoc.uSunPos, sunRelPos32);
+    gl.uniform3fv(terrainLoc.uBaseColor, nb.baseColor);
+    gl.uniform3fv(terrainLoc.uSecColor, nb.secColor);
+    gl.uniform3fv(terrainLoc.uAtmoColor, nb.atmoColor);
+    gl.uniform3fv(terrainLoc.uAtmoSkyColor, atmoSky32);
+    gl.uniform1f(terrainLoc.uAtmoStrength, nb.atmoStrength);
+    gl.uniform1f(terrainLoc.uAtmoDensity, nearestAtmoDensity);
+    gl.uniform1f(terrainLoc.uTime, timeSec);
+    gl.drawElements(gl.TRIANGLES, terrainIndexCount, gl.UNSIGNED_INT, 0);
+  }
+
+  // 5. Volumetric Corona, Rayleigh Halos, Intersected Rings & Double-Sided Cloud Decks (Pass 1, 2 & 3)
   gl.enable(gl.BLEND);
   gl.depthMask(false);
+  gl.useProgram(uberProg);
+  gl.bindVertexArray(sphereVAO);
+  gl.uniform1f(uberLoc.uPatchActive, 0.0);
+  gl.uniform1f(uberLoc.uReliefAmp, 0.0);
+  gl.uniform1f(uberLoc.uCanyonDepth, 0.0);
 
   for (let i = 0; i < BODY_COUNT; i++) {
     const b = ALL_BODIES[i];
@@ -3146,6 +3879,17 @@ function renderScene(timeSec) {
     gl.uniform3fv(uberLoc.uSecColor, b.secColor);
     gl.uniform3fv(uberLoc.uAtmoColor, b.atmoColor);
     gl.uniform1f(uberLoc.uAtmoStrength, b.atmoStrength);
+    gl.uniform1f(uberLoc.uNoiseScale, b.noiseScale);
+
+    if (b.cloudAlt > 0.1 && b.cloudDensity > 0.05) {
+      gl.disable(gl.CULL_FACE);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.uniform1i(uberLoc.uRenderPass, 3);
+      gl.uniform1f(uberLoc.uPassScale, b.cloudAlt);
+      gl.uniform1f(uberLoc.uCloudDensity, b.cloudDensity);
+      gl.drawElements(gl.TRIANGLES, sphereIndexCount, gl.UNSIGNED_SHORT, 0);
+      gl.enable(gl.CULL_FACE);
+    }
 
     if (b.atmoStrength > 0.05) {
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
@@ -3169,8 +3913,9 @@ function renderScene(timeSec) {
       gl.drawElements(gl.TRIANGLES, sphereIndexCount, gl.UNSIGNED_SHORT, 0);
     }
   }
+  gl.cullFace(gl.BACK);
 
-  // 6. 3D Parallax Moving Stars (Always active for continuous depth & forward motion cue)
+  // 6. 3D Parallax Moving Stars (Fade smoothly inside sunlit planetary atmospheres)
   gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
   gl.useProgram(pStarProg);
   gl.bindVertexArray(pStarVAO);
@@ -3179,6 +3924,7 @@ function renderScene(timeSec) {
   gl.uniformMatrix4fv(pStarLoc.uViewProj, false, viewProjMat);
   gl.uniform1f(pStarLoc.uFcoef, FCOEF);
   gl.uniform1f(pStarLoc.uDpr, dpr);
+  gl.uniform1f(pStarLoc.uStarVis, 1.0 - Math.min(0.94, nearestAtmoDensity * 0.90));
   gl.drawArrays(gl.POINTS, 0, PSTAR_COUNT);
 
   // 7. 3D Velocity Speed Streaks (Smoothly fade in during thrust / warp)
@@ -3280,7 +4026,7 @@ function renderHUD() {
           const alt = Math.max(0, dist - b.radius);
           const distStr = alt > 1000 ? `${(alt / 1000).toFixed(2)} Mm` : `${alt.toFixed(0)} km`;
           ctx2d.fillText(`ALT ${distStr}`, sx - br, sy - br - 6);
-        } else if (b.isPlanetOrbit || dist < 1200) {
+        } else if (b.isPlanetOrbit || dist < 3600) {
           ctx2d.strokeStyle = b.discovered ? "rgba(52, 211, 153, 0.55)" : "rgba(148, 163, 184, 0.45)";
           ctx2d.lineWidth = 1;
           ctx2d.beginPath();
@@ -3299,7 +4045,7 @@ function renderHUD() {
     }
 
     // Project HUD beacon for active target gate or nearby uncleared gates when rings are enabled
-    if (ringsEnabled && !b.ringCleared && (isSelected || dist < 1400)) {
+    if (ringsEnabled && !b.ringCleared && (isSelected || dist < 3600)) {
       const gx = gatePos64[idx + 0] - shipPos64[0];
       const gy = gatePos64[idx + 1] - shipPos64[1];
       const gz = gatePos64[idx + 2] - shipPos64[2];
@@ -3333,9 +4079,11 @@ function renderHUD() {
     bodyPos64[tIdx + 2] - shipPos64[2]
   ) - tBody.radius);
 
+  const nb = ALL_BODIES[nearestBodyIdx];
+  const nearSurface = nb.type !== 0 && (nearestAGL < nb.radius * 0.65 || (gravityBodyIdx === nearestBodyIdx && gravityLock > 0.15));
   const panelY = Math.max(62, viewHeight * 0.10);
-  const panelW = 260 * uiScale;
-  const panelH = 98 * uiScale;
+  const panelW = 266 * uiScale;
+  const panelH = (nearSurface ? 116 : 98) * uiScale;
   ctx2d.fillStyle = "rgba(7, 11, 20, 0.78)";
   ctx2d.strokeStyle = "rgba(148, 163, 184, 0.28)";
   ctx2d.lineWidth = 1;
@@ -3363,6 +4111,21 @@ function renderHUD() {
       : `VEL ${currentSpeed.toFixed(1)} km/s`;
   const rangeStr = tDist > 1000 ? `${(tDist / 1000).toFixed(2)} Mm` : `${tDist.toFixed(0)} km`;
   ctx2d.fillText(`${modeStr} · RNG ${rangeStr}`, 25, panelY + 80 * uiScale);
+
+  if (nearSurface) {
+    const zoneLabel = cloudMistFactor > 0.15
+      ? "CLOUD DECK"
+      : nearestAGL < 12.0
+        ? "SURFACE SKIM"
+        : nearestAtmoDensity > 0.08
+          ? "ATMOS ENTRY"
+          : gravityLock >= 0.98
+            ? "GRAV LOCK"
+            : "SOI CAPTURE";
+    ctx2d.fillStyle = cloudMistFactor > 0.15 ? "#f8fafc" : nearestAGL < 12.0 ? "#34d399" : gravityLock >= 0.98 ? "#a7f3d0" : "#7dd3fc";
+    ctx2d.font = `600 ${Math.round(10 * uiScale)}px monospace`;
+    ctx2d.fillText(`${nb.name.toUpperCase()} · AGL ${nearestAGL.toFixed(1)} km · ${zoneLabel}`, 25, panelY + 100 * uiScale);
+  }
 
   // Discovery Notification Banner
   if (toastTimer > 0.0) {
@@ -3417,6 +4180,7 @@ function animate(now) {
   lastTime = now;
   simTime += dt;
 
+  prevBodyPos64.set(bodyPos64);
   updateCelestialOrbits(simTime);
   stepPhysics(dt);
   renderScene(simTime);
